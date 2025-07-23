@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Nakisa.Application\Nakisa.Application.csproj" />
+      <ProjectReference Include="..\Nakisa.Persistence\Nakisa.Persistence.csproj" />
     </ItemGroup>
 
 </Project>
