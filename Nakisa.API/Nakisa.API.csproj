@@ -22,4 +22,8 @@
       <Folder Include="Middlewares\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Nakisa.Application\Nakisa.Application.csproj" />
+    </ItemGroup>
+
 </Project>

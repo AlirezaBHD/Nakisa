@@ -11,4 +11,9 @@
       <Folder Include="Migrations\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Nakisa.Application\Nakisa.Application.csproj" />
+      <ProjectReference Include="..\Nakisa.Domain\Nakisa.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

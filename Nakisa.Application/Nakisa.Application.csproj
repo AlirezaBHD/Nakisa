@@ -12,4 +12,10 @@
       <Folder Include="Services\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Nakisa.Contracts\Nakisa.Contracts.csproj" />
+      <ProjectReference Include="..\Nakisa.Domain\Nakisa.Domain.csproj" />
+      <ProjectReference Include="..\Nakisa.SharedKernel\Nakisa.SharedKernel.csproj" />
+    </ItemGroup>
+
 </Project>

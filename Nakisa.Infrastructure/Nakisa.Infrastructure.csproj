@@ -12,4 +12,10 @@
       <Folder Include="TelegramBotClientWrapper\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Nakisa.Application\Nakisa.Application.csproj" />
+      <ProjectReference Include="..\Nakisa.Contracts\Nakisa.Contracts.csproj" />
+      <ProjectReference Include="..\Nakisa.Domain\Nakisa.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
