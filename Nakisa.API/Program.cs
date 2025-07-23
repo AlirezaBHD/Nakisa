@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Nakisa.Application.Interfaces;
+using Nakisa.Application.Services;
 using Nakisa.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,12 @@ services.AddDbContext<AppDbContext>(options =>
         )
         .UseSnakeCaseNamingConvention());
 
+services.AddHostedService<BotService>();
+services.AddScoped<IBotFlowDispatcher, BotFlowDispatcher>();
+services.AddScoped<IPlaylistBrowseFlowHandler, PlaylistBrowseFlowHandler>();
+services.AddScoped<ISongSubmitFlowHandler,SongSubmitFlowHandler>();
+services.AddSingleton<IUserSessionService, UserSessionService>();
+services.AddScoped<IRegisterFlowHandler, RegisterFlowHandler>();
 
 var app = builder.Build();
 
