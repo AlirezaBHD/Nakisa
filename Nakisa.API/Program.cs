@@ -1,7 +1,19 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using Nakisa.Persistence;
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+
+services.AddControllers();
+services.AddOpenApi();
+
+services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(
+            builder.Configuration.GetConnectionString("DefaultConnection"),
+            npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+        )
+        .UseSnakeCaseNamingConvention());
+
 
 var app = builder.Build();
 
