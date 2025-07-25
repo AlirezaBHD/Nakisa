@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Nakisa.Infrastructure;
 using Nakisa.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,9 @@ services.AddDbContext<AppDbContext>(options =>
             npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
         )
         .UseSnakeCaseNamingConvention());
+
+
+builder.Services.AddApplicationServices();
 
 
 var app = builder.Build();
