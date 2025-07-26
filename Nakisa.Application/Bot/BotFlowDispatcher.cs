@@ -1,4 +1,5 @@
-﻿using Nakisa.Application.Bot.Interfaces;
+﻿using Nakisa.Application.Bot.Extensions;
+using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Domain.Enums;
 using Telegram.Bot;
@@ -27,16 +28,12 @@ public class BotFlowDispatcher : IBotFlowDispatcher
 
     public async Task DispatchAsync(ITelegramBotClient bot, Update update, CancellationToken ct)
     {
-        long chatId = update.Message?.Chat.Id
-                      ?? update.CallbackQuery?.Message?.Chat.Id
-                      ?? update.InlineQuery?.From?.Id
-                      ?? update.Message?.From?.Id
-                      ?? 0;
+        var chatId = update.GetChatId();
         var session = _sessionService.GetOrCreate(chatId);
 
         if (session.Flow == UserFlow.None)
         {
-            if (update.Message != null &&update.Message.Text?.ToLower() == "/start")
+            if (update.Message != null && update.Message.Text?.ToLower() == "/start")
             {
                 await bot.SendMessage(chatId, "سلام خوش اومدی! یکی از گزینه‌های زیر رو انتخاب کن:",
                     replyMarkup: MainKeyboard.MainMenuButton(), cancellationToken: ct);
