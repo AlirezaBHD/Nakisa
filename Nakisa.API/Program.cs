@@ -19,8 +19,9 @@ services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile).Assembly);
 
-builder.Services.AddApplicationServices();
+services.AddApplicationServices();
 
+services.AddPersistenceServices();
 
 var app = builder.Build();
 
