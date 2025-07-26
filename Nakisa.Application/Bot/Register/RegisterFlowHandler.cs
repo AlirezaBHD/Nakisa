@@ -25,9 +25,13 @@ public class RegisterFlowHandler : IRegisterFlowHandler
         session.Flow = UserFlow.Registering;
         session.FlowData = new RegisterDto { Step = RegisterStep.ChooseIdentity };
         _sessionService.Update(session);
-
-        await bot.SendMessage(
-            chatId: update.GetChatId(),
+        
+        var chatId = update.GetChatId();
+        var messageId = update.GetMessageId();
+        
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
             text: "دوست داری اسمت چجوری نمایش داده بشه؟",
             replyMarkup: RegisterKeyboards.ChooseIdentityButton(),
             cancellationToken: ct);
