@@ -15,27 +15,38 @@ public class SendingChannelLinkStepHandler : IRegisterStepHandler
 
     public async Task HandleAsync(Update update, RegisterDto data, ITelegramBotClient bot, CancellationToken ct)
     {
-        var channelLink = update.Message!.Text;
-        //validate channel link
         var chatId = update.GetChatId();
+        var channelLink = update.Message!.Text;
 
-        data.PersonChannelLink = channelLink;
-                
-        if (data.CaptionIdentifier == CaptionIdentifierType.Nickname)
-        {
-            data.CaptionIdentifier = CaptionIdentifierType.NicknameAndChannelName;
-        }
-        else if (data.CaptionIdentifier == CaptionIdentifierType.TelegramName)
-        {
-            data.CaptionIdentifier = CaptionIdentifierType.TelegramNameAndChannelName;
-        }
 
-        data.Step = RegisterStep.ChannelPrefix;
+        //validate channel link
+        if (channelLink.TryNormalizeTelegramChannelLink(out var cleanLink))
+        {
+            data.PersonChannelLink = channelLink;
                 
-        await bot.SendMessage(
-            chatId: chatId,
-            text: "میخوای چنلت زیر پست ها نشون داده بشه؟",
-            replyMarkup: RegisterKeyboards.ChannelLinkPrefixButton(),
-            cancellationToken: ct);
+            if (data.CaptionIdentifier == CaptionIdentifierType.Nickname)
+            {
+                data.CaptionIdentifier = CaptionIdentifierType.NicknameAndChannelName;
+            }
+            else if (data.CaptionIdentifier == CaptionIdentifierType.TelegramName)
+            {
+                data.CaptionIdentifier = CaptionIdentifierType.TelegramNameAndChannelName;
+            }
+
+            data.Step = RegisterStep.ChannelPrefix;
+                
+            await bot.SendMessage(
+                chatId: chatId,
+                text: "میخوای چنلت زیر پست ها نشون داده بشه؟",
+                replyMarkup: RegisterKeyboards.ChannelLinkPrefixButton(),
+                cancellationToken: ct);
+        }
+        else
+        {
+            await bot.SendMessage(
+                chatId: chatId,
+                text: "لینک ارسال شده اشتباه است \nفرمت صحیح:\nhttps://t.me/+WZHMwFGZM4NlMTZk\nt.me/+WZHMwFGZM4NlMTZk\n@TheOsservatore\nt.me/TheOsservatore\nhttps://t.me/TheOsservatore",
+                cancellationToken: ct);
+        }
     }
 }
