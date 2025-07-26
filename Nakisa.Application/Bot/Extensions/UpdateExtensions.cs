@@ -34,4 +34,11 @@ public static class UpdateExtensions
             _ => null
         };
     }
+    
+    public static int GetMessageId(this Update update)
+    {
+        return update.Message?.MessageId
+               ?? update.CallbackQuery?.Message?.MessageId
+               ?? 0;
+    }
 }
