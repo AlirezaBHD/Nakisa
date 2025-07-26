@@ -29,9 +29,8 @@ public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
         await _userService.AddOrUpdate(data);
         
         data.Step = RegisterStep.Completed;
-        await bot.EditMessageText(
+        await bot.SendMessage(
             chatId: chatId,
-            messageId: update.Message!.MessageId,
             text: "ثبت نام موفق",
             cancellationToken: ct);
     }
