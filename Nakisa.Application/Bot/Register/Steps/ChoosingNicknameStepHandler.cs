@@ -26,7 +26,7 @@ public class ChoosingNicknameStepHandler : IRegisterStepHandler
 
         var nickname = update.Message!.Text;
 
-        var isTaken = await _userService.IsNicknameTaken(nickname!);
+        var isTaken = await _userService.IsNicknameTaken(nickname!, chatId);
         if (isTaken)
         {
             await bot.SendMessage(
