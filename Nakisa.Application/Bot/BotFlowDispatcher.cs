@@ -1,8 +1,8 @@
 ﻿using Nakisa.Application.Bot.Interfaces;
+using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Nakisa.Application.Bot;
 
@@ -34,40 +34,44 @@ public class BotFlowDispatcher : IBotFlowDispatcher
                       ?? 0;
         var session = _sessionService.GetOrCreate(chatId);
 
-        if (session.Flow == UserFlow.None && update.Message != null)
+        if (session.Flow == UserFlow.None)
         {
-            switch (update.Message.Text?.ToLower())
+            if (update.Message != null &&update.Message.Text?.ToLower() == "/start")
             {
-                case "/start":
-                    await bot.SendMessage(chatId, "سلام خوش اومدی! یکی از گزینه‌های زیر رو انتخاب کن:",
-                        replyMarkup: MainMenuMarkup(), cancellationToken: ct);
-                    return;
+                await bot.SendMessage(chatId, "سلام خوش اومدی! یکی از گزینه‌های زیر رو انتخاب کن:",
+                    replyMarkup: MainKeyboard.MainMenuButton(), cancellationToken: ct);
+            }
+            else
+            {
 
-                case "ثبت نام":
-                    session.Flow = UserFlow.Registering;
-                    session.FlowData = null;
-                    _sessionService.Update(session);
-                    await _registerHandler.StartAsync(bot, update, session, ct);
-                    return;
+                switch (update.CallbackQuery!.Data)
+                {
+                    case "Register":
+                        session.Flow = UserFlow.Registering;
+                        session.FlowData = null;
+                        _sessionService.Update(session);
+                        await _registerHandler.StartAsync(bot, update, session, ct);
+                        return;
 
-                case "ارسال آهنگ":
-                    session.Flow = UserFlow.SubmittingSong;
-                    session.FlowData = null;
-                    _sessionService.Update(session);
-                    await _songHandler.StartAsync(bot, update, session, ct);
-                    return;
+                    case "SubmitSong":
+                        session.Flow = UserFlow.SubmittingSong;
+                        session.FlowData = null;
+                        _sessionService.Update(session);
+                        await _songHandler.StartAsync(bot, update, session, ct);
+                        return;
 
-                case "دیدن پلی‌لیست‌ها":
-                    session.Flow = UserFlow.BrowsingPlaylists;
-                    session.FlowData = null;
-                    _sessionService.Update(session);
-                    await _playlistHandler.StartAsync(bot, update, session, ct);
-                return;
+                    case "ViewPlaylists":
+                        session.Flow = UserFlow.BrowsingPlaylists;
+                        session.FlowData = null;
+                        _sessionService.Update(session);
+                        await _playlistHandler.StartAsync(bot, update, session, ct);
+                        return;
 
-                default:
-                    await bot.SendMessage(chatId, "دستور نامعتبره. لطفاً از منو استفاده کن.",
-                        replyMarkup: MainMenuMarkup(), cancellationToken: ct);
-                    return;
+                    default:
+                        await bot.SendMessage(chatId, "دستور نامعتبره. لطفاً از منو استفاده کن.",
+                            replyMarkup: MainKeyboard.MainMenuButton(), cancellationToken: ct);
+                        return;
+                }
             }
         }
         else
@@ -88,11 +92,4 @@ public class BotFlowDispatcher : IBotFlowDispatcher
             }
         }
     }
-
-    private ReplyKeyboardMarkup MainMenuMarkup() => new ReplyKeyboardMarkup(new[]
-    {
-        new[] { new KeyboardButton("ثبت نام") },
-        new[] { new KeyboardButton("ارسال آهنگ") },
-        new[] { new KeyboardButton("دیدن پلی‌لیست‌ها") }
-    }) { ResizeKeyboard = true };
 }
