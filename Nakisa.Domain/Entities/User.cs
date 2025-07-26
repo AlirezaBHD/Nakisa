@@ -4,8 +4,8 @@ namespace Nakisa.Domain.Entities;
 
 public class User: BaseEntity
 {
-    public required string ConnectionId { get; set; }
-    public string? TelegramId { get; set; }
+    public required long ChatId { get; set; }
+    public long? TelegramId { get; set; }
     public string? Username { get; set; }
     public string? Nickname { get; set; }
     public string? PersonChannelLink { get; set; }
@@ -14,7 +14,7 @@ public class User: BaseEntity
     public string? AvatarPath { get; set; }
     public CaptionIdentifierType CaptionIdentifier { get; set; }
     public ChannelIncludingType ChannelIncluding { get; set; }
-    public bool IsActive { get; set; }
-    public bool IsStaff { get; set; }
+    public bool IsActive { get; set; } = true;
+    public bool IsStaff { get; set; } = false;
     public ICollection<Music> PostedMusics { get; set; } = new List<Music>();
 }
