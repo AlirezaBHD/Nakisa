@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Nakisa.Application.Interfaces;
+using Nakisa.Application.Mapping;
 using Nakisa.Infrastructure;
 using Nakisa.Persistence;
 
@@ -15,6 +17,7 @@ services.AddDbContext<AppDbContext>(options =>
         )
         .UseSnakeCaseNamingConvention());
 
+builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile).Assembly);
 
 builder.Services.AddApplicationServices();
 
