@@ -22,6 +22,8 @@ public class ChooseIdentityStepHandler : IRegisterStepHandler
     {
         var callback = update.CallbackQuery!.Data;
         var chatId = update.GetChatId();
+        var messageId = update.GetMessageId();
+        
         data.TelegramId  = update.GetUserId();
         data.ChatId = chatId;
         
@@ -32,7 +34,7 @@ public class ChooseIdentityStepHandler : IRegisterStepHandler
                 data.Step = RegisterStep.ChooseLinkType;
                 await bot.EditMessageText(
                     chatId: chatId,
-                    messageId: update.CallbackQuery.Message!.MessageId,
+                    messageId: messageId,
                     text: "می‌خوای وقتی کسی روی اسمت کلیک کرد، به جایی وصل بشه؟",
                     replyMarkup: RegisterKeyboards.LinkTypeButton(),
                     cancellationToken: ct);
@@ -42,8 +44,8 @@ public class ChooseIdentityStepHandler : IRegisterStepHandler
                 data.CaptionIdentifier = CaptionIdentifierType.Nickname;
                 data.Step = RegisterStep.ChoosingNickname;
                 await bot.EditMessageText(
-                    chatId: update.CallbackQuery.Message!.Chat.Id,
-                    messageId: update.CallbackQuery.Message.MessageId,
+                    chatId: chatId,
+                    messageId: messageId,
                     text: "اسم مستعارت رو وارد کن",
                     cancellationToken: ct);
                 break;
@@ -53,8 +55,8 @@ public class ChooseIdentityStepHandler : IRegisterStepHandler
                 await _userService.AddOrUpdate(data);
                 data.Step = RegisterStep.Completed;
                 await bot.EditMessageText(
-                    chatId: update.CallbackQuery.Message!.Chat.Id,
-                    messageId: update.CallbackQuery.Message.MessageId,
+                    chatId: chatId,
+                    messageId: messageId,
                     text: "ثبت نام موفق",
                     cancellationToken: ct);
                 break;
