@@ -7,4 +7,5 @@ public interface IUserService : IService<User>
 {
     Task AddOrUpdate(RegisterDto registerDto);
     Task<bool> IsNicknameTaken(string nickname);
+    Task<bool> IsUserExist(long chatId);
 }
