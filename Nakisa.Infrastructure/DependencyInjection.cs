@@ -6,6 +6,8 @@ using Nakisa.Application.Bot.Register;
 using Nakisa.Application.Bot.Register.Steps;
 using Nakisa.Application.Bot.Session;
 using Nakisa.Application.Bot.SongSubmit;
+using Nakisa.Application.Interfaces;
+using Nakisa.Application.Services;
 using Nakisa.Infrastructure.Bot;
 
 namespace Nakisa.Infrastructure;
@@ -32,6 +34,9 @@ public static class DependencyInjection
         services.AddScoped<IRegisterStepHandler,ChooseLinkTypeStepHandler>();
         services.AddScoped<IRegisterStepHandler,ChoosingNicknameStepHandler>();
         services.AddScoped<IRegisterStepHandler,SendingChannelLinkStepHandler>();
+        
+        services.AddScoped(typeof(IService<>), typeof(Service<>));
+        services.AddScoped<IUserService,UserService>();
 
         return services;
     }
