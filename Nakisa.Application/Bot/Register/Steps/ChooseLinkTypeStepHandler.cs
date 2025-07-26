@@ -16,6 +16,8 @@ public class ChooseLinkTypeStepHandler : IRegisterStepHandler
     {
         var callBack = update.CallbackQuery!.Data;
         var chatId = update.GetChatId();
+        var messageId = update.GetMessageId();
+        
         switch (callBack)
         {
             case "Username":
@@ -33,10 +35,12 @@ public class ChooseLinkTypeStepHandler : IRegisterStepHandler
                 }
 
                 data.Username = username; //user might change that
-                        
+                
+                data.Step = RegisterStep.ChannelPrefix;
+                
                 await bot.EditMessageText(
                     chatId: chatId,
-                    messageId: update.Message!.MessageId,
+                    messageId: messageId,
                     text: "میخوای چنلت زیر پست ها نشون داده بشه؟",
                     replyMarkup: RegisterKeyboards.ChannelLinkPrefixButton(),
                     cancellationToken: ct);
@@ -49,7 +53,7 @@ public class ChooseLinkTypeStepHandler : IRegisterStepHandler
 
                 await bot.EditMessageText(
                     chatId: chatId,
-                    messageId: update.CallbackQuery.Message!.MessageId,
+                    messageId: messageId,
                     text: "لینک چنلتو بفرست",
                     cancellationToken: ct);
 
@@ -60,7 +64,7 @@ public class ChooseLinkTypeStepHandler : IRegisterStepHandler
 
                 await bot.EditMessageText(
                     chatId: chatId,
-                    messageId: update.CallbackQuery.Message!.MessageId,
+                    messageId: messageId,
                     text: "میخوای چنلت زیر پست ها نشون داده بشه؟",
                     replyMarkup: RegisterKeyboards.ChannelLinkPrefixButton(),
                     cancellationToken: ct);
