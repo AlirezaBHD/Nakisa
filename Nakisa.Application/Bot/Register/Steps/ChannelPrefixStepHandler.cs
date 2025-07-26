@@ -21,6 +21,8 @@ public class ChannelPrefixStepHandler : IRegisterStepHandler
     {
         var callBack = update.CallbackQuery!.Data;
         var chatId = update.GetChatId();
+        var messageId = update.GetMessageId();
+        
         switch (callBack)
         {
             case "Yes":
@@ -29,7 +31,7 @@ public class ChannelPrefixStepHandler : IRegisterStepHandler
                         
                 await bot.EditMessageText(
                     chatId: chatId,
-                    messageId: update.CallbackQuery.Message!.MessageId,
+                    messageId: messageId,
                     text: "لینک پابلیک چنلتو بفرست",
                     cancellationToken: ct);
                         
@@ -43,7 +45,7 @@ public class ChannelPrefixStepHandler : IRegisterStepHandler
                         
                 await bot.EditMessageText(
                     chatId: chatId,
-                    messageId: update.CallbackQuery.Message!.MessageId,
+                    messageId: messageId,
                     text: "ثبت نام موفق",
                     cancellationToken: ct);
                         
