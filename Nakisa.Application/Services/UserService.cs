@@ -57,4 +57,11 @@ public class UserService : Service<User>, IUserService
         
         return result;
     }
+
+    public async Task<bool> IsUserExist(long chatId)
+    {
+        var queryable = Repository.GetQueryable();
+        var isExist = await queryable.AnyAsync(u => u.ChatId == chatId);
+        return isExist;
+    }
 }
