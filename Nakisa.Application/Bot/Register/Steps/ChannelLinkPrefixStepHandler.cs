@@ -48,8 +48,3 @@ public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
         
     }
 }
-
-public class MessageDto
-{
-    public string PersonChannelLink { get; set; }
-}
