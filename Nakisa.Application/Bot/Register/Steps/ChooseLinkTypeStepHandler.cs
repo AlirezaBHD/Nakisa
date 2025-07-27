@@ -28,7 +28,7 @@ public class ChooseLinkTypeStepHandler : IRegisterStepHandler
                     await bot.EditMessageText(
                         chatId: chatId,
                         messageId: messageId,
-                        text: "می‌خوای وقتی کسی روی اسمت کلیک کرد، به جایی وصل بشه؟",
+                        text: "آیدیتو هاید کردی نمیتونم بهش دسترسی داشته باشم.\nدرستش کن یا یه گزینه دیگه رو انتخواب کن",
                         replyMarkup: RegisterKeyboards.LinkTypeButton(),
                         cancellationToken: ct);
                     break;
