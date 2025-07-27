@@ -18,11 +18,9 @@ public class SendingChannelLinkStepHandler : IRegisterStepHandler
         var chatId = update.GetChatId();
         var channelLink = update.Message!.Text;
 
-
-        //validate channel link
         if (channelLink.TryNormalizeTelegramChannelLink(out var cleanLink))
         {
-            data.PersonChannelLink = channelLink;
+            data.PersonChannelLink = cleanLink;
                 
             if (data.CaptionIdentifier == CaptionIdentifierType.Nickname)
             {
