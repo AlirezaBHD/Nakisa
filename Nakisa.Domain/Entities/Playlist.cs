@@ -10,19 +10,34 @@ public class Playlist : BaseEntity
     [MaxLength(100)]
     [Display(Name = "نام")]
     public required string Name { get; set; }
-    
+
     [MaxLength(10)]
     [Display(Name = "ایموجی")]
-    public required string Emoji { get; set; }
+    public string? Emoji { get; set; }
+
+    public required Category Category { get; set; }
+    public int CategoryId { get; set; }
     
-    public required Category Category { get; set;}
-    public int CategoryId { get; set;}
     public long TelegramChannelId { get; set; }
-    public required string ChannelInviteLink { get; set; }
+    
+    public string? ChannelInviteLink { get; set; }
+    
     public long TelegramGroupId { get; set; }
+    
+    public string? GroupInviteLink { get; set; }
+
+    public int? ParentId { get; set; }
+    public Playlist? Parent { get; set; }
+
+    public ICollection<Playlist> SubPlaylists { get; set; } = new List<Playlist>();
+
     public bool IncludeInMainPage { get; set; }
+    
     public bool IsActive { get; set; }
+    
     public string? ProfileImagePath { get; set; }
+    
     public VisibilityType Visibility { get; set; }
+    
     public ICollection<Music> Musics { get; set; } = new List<Music>();
 }
