@@ -32,6 +32,12 @@ public class AppDbContext: DbContext
             .WithMany(a => a.Playlists)
             .HasForeignKey(sd => sd.CategoryId);
         
+        modelBuilder.Entity<Playlist>()
+            .HasOne(p => p.Parent)
+            .WithMany(p => p.SubPlaylists)
+            .HasForeignKey(p => p.ParentId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
         modelBuilder.Entity<Music>()
             .HasOne(sd => sd.Playlist)
             .WithMany(a => a.Musics)
