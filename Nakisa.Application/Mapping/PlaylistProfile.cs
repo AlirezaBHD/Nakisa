@@ -9,5 +9,7 @@ public class PlaylistProfile : Profile
     public PlaylistProfile()
     {
         CreateMap<Playlist, MainPagePlaylistsDto>();
+        CreateMap<Playlist, PlaylistsDto>();
+        CreateMap<Playlist, ParentPlaylistDto>();
     }
 }
