@@ -37,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IRegisterStepHandler,SendingChannelLinkStepHandler>();
         
         services.AddScoped<IMusicSubmissionStepHandler,SelectingPlaylistStepHandler>();
+        services.AddScoped<IMusicSubmissionStepHandler,WaitingForMusicStepHandler>();
         
         services.AddScoped(typeof(IService<>), typeof(Service<>));
         services.AddScoped<IUserService,UserService>();
