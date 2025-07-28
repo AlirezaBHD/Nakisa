@@ -52,5 +52,5 @@ public class AppDbContext: DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Playlist> Playlists => Set<Playlist>();
-    public DbSet<Music> Tracks => Set<Music>();
+    public DbSet<Music> Musics => Set<Music>();
 }
