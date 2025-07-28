@@ -3,6 +3,7 @@ using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.Interfaces;
+using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -62,7 +63,14 @@ public class SelectingPlaylistStepHandler : IMusicSubmissionStepHandler
             }
             else if (playlistType == "submit")
             {
-                
+                var playlistId = int.Parse(callbackData.Split(":")[1]);
+                await bot.EditMessageText(
+                    chatId: chatId,
+                    messageId: messageId,
+                    text: "موزیکتو بفرست تا به پلیلیست اضافش کنم",
+                    cancellationToken: ct);
+                data.Step = MusicSubmissionStep.WaitingForMusic;
+                data.TargetPlaylistId = playlistId;
             }
         }
         
