@@ -1,4 +1,5 @@
 ﻿using Nakisa.Application.DTOs.Category;
+using Nakisa.Application.DTOs.Playlist;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Nakisa.Application.Bot.Keyboards;
@@ -21,7 +22,8 @@ public static class MusicSubmissionKeyboard
 
             foreach (var playlist in category.Playlists)
             {
-                row.Add(InlineKeyboardButton.WithCallbackData($"{playlist.Emoji} {playlist.Name}", $"playlist:{playlist.Id}"));
+                row.Add(InlineKeyboardButton.WithCallbackData($"{playlist.Emoji} {playlist.Name}",
+                    $"playlist:{playlist.Id}:brows"));
                 count++;
 
                 if (count % 2 == 0)
@@ -35,6 +37,34 @@ public static class MusicSubmissionKeyboard
             {
                 keyboard.Add(row);
             }
+        }
+
+        return new InlineKeyboardMarkup(keyboard);
+    }
+
+    public static InlineKeyboardMarkup CategoryPlaylistsButton(IEnumerable<MainPagePlaylistsDto> playlists)
+    {
+        var keyboard = new List<List<InlineKeyboardButton>>();
+
+        var row = new List<InlineKeyboardButton>();
+        int count = 0;
+
+        foreach (var playlist in playlists)
+        {
+            row.Add(InlineKeyboardButton.WithCallbackData($"{playlist.Emoji} {playlist.Name}",
+                $"playlist:{playlist.Id}:brows"));
+            count++;
+
+            if (count % 3 == 0)
+            {
+                keyboard.Add(row);
+                row = new List<InlineKeyboardButton>();
+            }
+        }
+
+        if (row.Any())
+        {
+            keyboard.Add(row);
         }
 
         return new InlineKeyboardMarkup(keyboard);
