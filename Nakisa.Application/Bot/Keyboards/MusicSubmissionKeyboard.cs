@@ -69,4 +69,49 @@ public static class MusicSubmissionKeyboard
 
         return new InlineKeyboardMarkup(keyboard);
     }
+
+    public static InlineKeyboardMarkup PlaylistsButton(List<MainPagePlaylistsDto> playlists)
+    {
+        var mainPlaylist = playlists.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.Emoji));
+        if (mainPlaylist != null)
+        {
+            playlists.Remove(mainPlaylist);
+        }
+
+        var keyboard = new List<List<InlineKeyboardButton>>();
+
+        if (mainPlaylist != null)
+        {
+            keyboard.Add(new List<InlineKeyboardButton>
+            {
+                InlineKeyboardButton.WithCallbackData(
+                    $"- {mainPlaylist.Emoji} {mainPlaylist.Name} -",
+                    $"playlist:{mainPlaylist.Id}:submit"
+                )
+            });
+        }
+
+        for (int i = 0; i < playlists.Count; i += 2)
+        {
+            var row = new List<InlineKeyboardButton>();
+
+            row.Add(InlineKeyboardButton.WithCallbackData(
+                playlists[i].Name,
+                $"playlist:{playlists[i].Id}:submit"
+            ));
+
+            if (i + 1 < playlists.Count)
+            {
+                row.Add(InlineKeyboardButton.WithCallbackData(
+                    playlists[i + 1].Name,
+                    $"playlist:{playlists[i + 1].Id}:submit"
+                ));
+            }
+
+            keyboard.Add(row);
+        }
+
+        return new InlineKeyboardMarkup(keyboard);
+        
+    }
 }
