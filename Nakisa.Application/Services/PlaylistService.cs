@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Nakisa.Application.DTOs.Playlist;
 using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Entities;
+using Nakisa.Domain.Enums;
 using Nakisa.Domain.Interfaces;
 
 namespace Nakisa.Application.Services;
@@ -18,4 +20,13 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
     }
 
     #endregion
+
+    public async Task<IEnumerable<MainPagePlaylistsDto>> GetPlaylistsByCategoryId(int categoryId)
+    {
+        var result = await GetAllProjectedAsync<MainPagePlaylistsDto>(
+            predicate: p => p.CategoryId == categoryId && p.ParentId == null,
+            trackingBehavior: TrackingBehavior.AsNoTracking);
+
+        return result;
+    }
 }
