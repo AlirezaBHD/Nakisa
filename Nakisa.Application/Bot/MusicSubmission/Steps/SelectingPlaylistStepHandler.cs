@@ -21,6 +21,18 @@ public class SelectingPlaylistStepHandler : IMusicSubmissionStepHandler
 
     public async Task HandleAsync(Update update, SongSubmissionDto data, ITelegramBotClient bot, CancellationToken ct)
     {
+        var chatId = update.GetChatId();
+        var messageId = update.GetMessageId();
 
+        var categories = await _categoryService.GetCategories();
+
+        var buttons = MusicSubmissionKeyboard.CategoriesButton(categories);
+        
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "یه دسته بندی یا پلیلیست انتخاب کنید",
+            replyMarkup: buttons,
+            cancellationToken: ct);
     }
 }
