@@ -8,5 +8,5 @@ public interface IPlaylistService : IService<Playlist>
     Task<IEnumerable<MainPagePlaylistsDto>> GetPlaylistsByCategoryId(int categoryId);
     
     Task<List<MainPagePlaylistsDto>> GetPlaylistsByParentId(int playlistId);
-
+    Task<PlaylistsDto> GetPlaylistsInfo(int playlistId);
 }

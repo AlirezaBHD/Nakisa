@@ -38,4 +38,11 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
         
         return result.ToList();
     }
+
+    public async Task<PlaylistsDto> GetPlaylistsInfo(int playlistId)
+    {
+        var result = await GetByIdProjectedAsync<PlaylistsDto>(playlistId,
+            trackingBehavior: TrackingBehavior.AsNoTrackingWithIdentityResolution);
+        return result;
+    }
 }
