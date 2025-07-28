@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Nakisa.Application.DTOs.Category;
 using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Entities;
@@ -19,6 +18,14 @@ public class CategoryService : Service<Category>, ICategoryService
     {
         _mapper = mapper;
     }
-
+    
     #endregion
+    
+    public async Task<IEnumerable<GetCategoryDto>> GetCategories()
+    {
+        var result = await GetAllProjectedAsync<GetCategoryDto>(includes: [c => c.Playlists],
+            trackingBehavior:TrackingBehavior.AsNoTrackingWithIdentityResolution);
+
+        return result;
+    }
 }
