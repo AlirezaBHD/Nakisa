@@ -29,4 +29,13 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
 
         return result;
     }
+    
+    public async Task<List<MainPagePlaylistsDto>> GetPlaylistsByParentId(int playlistId)
+    {
+        var result = await GetAllProjectedAsync<MainPagePlaylistsDto>(
+            predicate: p => p.ParentId == playlistId || p.Id == playlistId,
+            trackingBehavior: TrackingBehavior.AsNoTracking);
+        
+        return result.ToList();
+    }
 }
