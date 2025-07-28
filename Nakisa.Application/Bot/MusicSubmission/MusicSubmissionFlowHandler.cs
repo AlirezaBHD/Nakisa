@@ -25,7 +25,7 @@ public class MusicSubmissionFlowHandler : ISongSubmitFlowHandler
 
     public async Task StartAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct)
     {
-        session.Flow = UserFlow.Registering;
+        session.Flow = UserFlow.SubmittingSong;
         session.FlowData = new SongSubmissionDto() { Step = Domain.Enums.MusicSubmissionStep.SelectingPlaylist };
         _sessionService.Update(session);
         
