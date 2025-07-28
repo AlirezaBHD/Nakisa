@@ -11,10 +11,12 @@ namespace Nakisa.Application.Bot.MusicSubmission.Steps;
 public class SelectingPlaylistStepHandler : IMusicSubmissionStepHandler
 {
     private readonly ICategoryService _categoryService;
+    private readonly IPlaylistService _playlistService;
 
-    public SelectingPlaylistStepHandler(ICategoryService categoryService)
+    public SelectingPlaylistStepHandler(ICategoryService categoryService, IPlaylistService playlistService)
     {
         _categoryService = categoryService;
+        _playlistService = playlistService;
     }
 
     public Domain.Enums.MusicSubmissionStep Step => Domain.Enums.MusicSubmissionStep.SelectingPlaylist;
@@ -23,16 +25,59 @@ public class SelectingPlaylistStepHandler : IMusicSubmissionStepHandler
     {
         var chatId = update.GetChatId();
         var messageId = update.GetMessageId();
+        var callbackData = update.CallbackQuery?.Data ?? string.Empty;
 
-        var categories = await _categoryService.GetCategories();
+        if (callbackData.StartsWith("category"))
+        {
+            var categoryId = int.Parse(callbackData.Split(":")[1]);
+            var playlists = await _playlistService.GetPlaylistsByCategoryId(categoryId);
+            var buttons = MusicSubmissionKeyboard.CategoryPlaylistsButton(playlists);
 
-        var buttons = MusicSubmissionKeyboard.CategoriesButton(categories);
+            await bot.EditMessageText(
+                chatId: chatId,
+                messageId: messageId,
+                text: "یه پلیلیست انتخاب کنید",
+                replyMarkup: buttons,
+                cancellationToken: ct);
+        }
         
-        await bot.EditMessageText(
-            chatId: chatId,
-            messageId: messageId,
-            text: "یه دسته بندی یا پلیلیست انتخاب کنید",
-            replyMarkup: buttons,
-            cancellationToken: ct);
+        else if (callbackData.StartsWith("playlist"))
+        {
+            var playlistType = callbackData.Split(":")[2];
+            if (playlistType == "brows")
+            {
+                var playlistId = int.Parse(callbackData.Split(":")[1]);
+                var playlists = await _playlistService.GetPlaylistsByParentId(playlistId);
+                
+                var buttons = MusicSubmissionKeyboard.PlaylistsButton(playlists);
+
+                await bot.EditMessageText(
+                    chatId: chatId,
+                    messageId: messageId,
+                    text: "یه پلیلیست انتخاب کنید",
+                    replyMarkup: buttons,
+                    cancellationToken: ct);
+                
+                
+            }
+            else if (playlistType == "submit")
+            {
+                
+            }
+        }
+        
+        else
+        {
+            var categories = await _categoryService.GetCategories();
+
+            var buttons = MusicSubmissionKeyboard.CategoriesButton(categories);
+
+            await bot.EditMessageText(
+                chatId: chatId,
+                messageId: messageId,
+                text: "یه دسته بندی یا پلیلیست انتخاب کنید",
+                replyMarkup: buttons,
+                cancellationToken: ct);
+        }
     }
 }
