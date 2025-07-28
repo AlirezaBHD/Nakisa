@@ -21,6 +21,32 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
 
     public async Task HandleAsync(Update update, SongSubmissionDto data, ITelegramBotClient bot, CancellationToken ct)
     {
+        var chatId = update.GetChatId();
+        
+        if (update.Message?.Audio != null)
+        {
+            var audio = update.Message.Audio;
+            var fileId = audio.FileId;
+            // var caption = _userService.GenerateCaption(chatId);
+            var playlistsInfo = await _playlistService.GetPlaylistsInfo(data.TargetPlaylistId);
+            
+            // var result = _botService.SendMusicToChannel(fileId: fileId, caption: caption, playlists: []);
+            await bot.SendMessage(
+                chatId: chatId,
+                text: "یه فایل موزیک قابل قبول بفرستید",
+                cancellationToken: ct);
+            await bot.SendMessage(
+                chatId: chatId,
+                text: "یه فایل موزیک قابل قبول بفرستید",
+                cancellationToken: ct);
+        }
+        else
+        {
+            await bot.SendMessage(
+                chatId: chatId,
+                text: "یه فایل موزیک قابل قبول بفرستید",
+                cancellationToken: ct);
+        }
 
     }
 }
