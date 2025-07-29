@@ -30,6 +30,10 @@ public class ChooseIdentityStepHandler : IRegisterStepHandler
         switch (callback)
         {
             case "TelegramName":
+
+                data.FirstName = update.CallbackQuery?.From.FirstName;
+                data.LastName = update.CallbackQuery?.From.LastName;
+                
                 data.CaptionIdentifier = CaptionIdentifierType.TelegramName;
                 data.Step = RegisterStep.ChooseLinkType;
                 await bot.EditMessageText(
