@@ -11,5 +11,6 @@ public class PlaylistProfile : Profile
         CreateMap<Playlist, MainPagePlaylistsDto>();
         CreateMap<Playlist, PlaylistsDto>();
         CreateMap<Playlist, ParentPlaylistDto>();
+        CreateMap<Playlist, BrowsePlaylistDto>();
     }
 }
