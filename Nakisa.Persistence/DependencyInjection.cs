@@ -1,11 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Nakisa.Application.Bot;
-using Nakisa.Application.Bot.Interfaces;
-using Nakisa.Application.Bot.PlaylistBrowse;
-using Nakisa.Application.Bot.Register;
-using Nakisa.Application.Bot.Register.Steps;
-using Nakisa.Application.Bot.Session;
-using Nakisa.Application.Bot.SongSubmit;
 using Nakisa.Domain.Interfaces;
 using Nakisa.Persistence.Repositories;
 
@@ -17,6 +10,9 @@ public static class DependencyInjection
     {
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUserRepository,UserRepository>();
+        services.AddScoped<ICategoryRepository,CategoryRepository>();
+        services.AddScoped<IPlaylistRepository,PlaylistRepository>();
+        services.AddScoped<IMusicRepository,MusicRepository>();
         return services;
     }
 }
