@@ -12,5 +12,10 @@ public class CategoryProfile : Profile
             .ForMember(dest => dest.Playlists, opt =>
                 opt.MapFrom(src => src.Playlists
                     .Where(p => p.IsActive && p.IncludeInMainPage)));
+        
+        CreateMap<Category, BrowseCategoryDto>()
+            .ForMember(dest => dest.Playlists, opt =>
+                opt.MapFrom(src => src.Playlists
+                    .Where(p => p.IsActive && p.ParentId == null)));
     }
 }
