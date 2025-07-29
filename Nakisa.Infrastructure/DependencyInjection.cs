@@ -23,7 +23,7 @@ public static class DependencyInjection
         
         services.AddScoped<IPlaylistBrowseFlowHandler, PlaylistBrowseFlowHandler>();
         
-        services.AddScoped<ISongSubmitFlowHandler,MusicSubmissionFlowHandler>();
+        services.AddScoped<IMusicSubmitFlowHandler,MusicSubmissionFlowHandler>();
         
         services.AddSingleton<IUserSessionService, UserSessionService>();
         
