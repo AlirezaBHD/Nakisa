@@ -6,6 +6,8 @@ public class User: BaseEntity
 {
     public required long ChatId { get; set; }
     public long? TelegramId { get; set; }
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
     public string? Username { get; set; }
     public string? Nickname { get; set; }
     public string? PersonChannelLink { get; set; }
