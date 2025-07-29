@@ -26,19 +26,18 @@ public class ChoosingNicknameStepHandler : IRegisterStepHandler
 
         var nickname = update.Message!.Text;
 
-        var isTaken = await _userService.IsNicknameTaken(nickname!);
-        if (isTaken)
+        var isNicknameValid =await IsNicknameValid(nickname, chatId);
+        
+        if (!isNicknameValid.IsValid)
         {
             await bot.SendMessage(
                 chatId: chatId,
-                text: "این اسم توسط یکی دیگه انتخب شده. یه اسم دیگه انتخاب کن",
+                text: isNicknameValid.ErrorMessage,
                 cancellationToken: ct);
         }
 
         else
         {
-            //TODO: Validate Name
-
             data.Nickname = nickname;
 
             data.Step = RegisterStep.ChooseLinkType;
@@ -48,6 +47,24 @@ public class ChoosingNicknameStepHandler : IRegisterStepHandler
                 text: "می‌خوای وقتی کسی روی اسمت کلیک کرد، به جایی وصل بشه؟",
                 replyMarkup: RegisterKeyboards.LinkTypeButton(),
                 cancellationToken: ct);
+        }
+    }
+
+    private async Task<(bool IsValid, string ErrorMessage)> IsNicknameValid(string? nickname, long chatId)
+    {
+        var isTaken = await _userService.IsNicknameTaken(nickname!, chatId);
+        if (isTaken)
+        {
+            return (false, "این اسم توسط یکی دیگه انتخب شده. یه اسم دیگه انتخاب کن");
+        }
+        else if (nickname!.Length >= 30 || nickname.Length < 2)
+        {
+            return (false, "نام کاربری باید بین 2 تا 30 کارکتر باشد. یه اسم دیگه انتخاب کن");
+        }
+
+        else
+        {
+            return (true, string.Empty);
         }
     }
 }

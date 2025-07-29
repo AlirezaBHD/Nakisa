@@ -50,10 +50,10 @@ public class UserService : Service<User>, IUserService
         await Repository.SaveAsync();
     }
 
-    public async Task<bool> IsNicknameTaken(string nickname)
+    public async Task<bool> IsNicknameTaken(string nickname , long chatId)
     {
         var queryable = Repository.GetQueryable();
-        var result = await queryable.AnyAsync(u => u.Nickname == nickname);
+        var result = await queryable.AnyAsync(u => u.Nickname == nickname && u.ChatId != chatId);
         
         return result;
     }

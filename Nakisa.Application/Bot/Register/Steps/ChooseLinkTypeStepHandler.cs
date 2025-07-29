@@ -21,9 +21,18 @@ public class ChooseLinkTypeStepHandler : IRegisterStepHandler
         switch (callBack)
         {
             case "Username":
-                string? username = update.Message?.From?.Username
-                                   ?? update.CallbackQuery?.From?.Username;
-                //Check if username is not null
+                var username = update.Message?.From?.Username
+                               ?? update.CallbackQuery?.From?.Username;
+                if (username == null)
+                {
+                    await bot.EditMessageText(
+                        chatId: chatId,
+                        messageId: messageId,
+                        text: "آیدیتو هاید کردی نمیتونم بهش دسترسی داشته باشم.\nدرستش کن یا یه گزینه دیگه رو انتخواب کن",
+                        replyMarkup: RegisterKeyboards.LinkTypeButton(),
+                        cancellationToken: ct);
+                    break;
+                }
 
                 if (data.CaptionIdentifier == CaptionIdentifierType.Nickname)
                 {
