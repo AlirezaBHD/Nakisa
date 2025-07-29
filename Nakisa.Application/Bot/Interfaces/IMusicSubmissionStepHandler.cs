@@ -9,5 +9,4 @@ public interface IMusicSubmissionStepHandler
 {
     MusicSubmissionStep Step { get; }
     Task HandleAsync(Update update, SongSubmissionDto data, ITelegramBotClient bot, CancellationToken ct);
-
 }
