@@ -32,23 +32,43 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
             return;
         }
 
+
         var fileId = audio.FileId;
-        var caption = await _userService.GenerateCaption(chatId);
+        var userIdentifier = await _userService.GenerateCaption(chatId);
         var playlistsInfo = await _playlistService.GetPlaylistsInfo(data.TargetPlaylistId);
 
-        var childMessage = await SendAudioToChannel(bot, playlistsInfo.TelegramChannelId, fileId, caption, ct);
+        var messageCaption = GenerateCaption(userIdentifier, playlistsInfo.Emoji, playlistsInfo.Name,
+            playlistsInfo.ChannelInviteLink);
+
+        var childMessage = await SendAudioToChannel(bot, playlistsInfo.TelegramChannelId, fileId, messageCaption, ct);
+
         var resultMessage = FormatMessage(playlistsInfo, childMessage);
 
         if (playlistsInfo.Parent is not null)
         {
-            var parentMessage = await SendAudioToChannel(bot, playlistsInfo.Parent.TelegramChannelId, fileId, caption, ct);
+            messageCaption = GenerateCaption(userIdentifier, playlistsInfo.Parent.Emoji, playlistsInfo.Parent.Name,
+                playlistsInfo.Parent.ChannelInviteLink);
+            
+            var parentMessage =
+                await SendAudioToChannel(bot, playlistsInfo.Parent.TelegramChannelId, fileId, messageCaption, ct);
             resultMessage = FormatParentMessage(playlistsInfo, parentMessage, resultMessage);
         }
 
         await SendText(bot, chatId, resultMessage, ct);
         await SendText(bot, chatId, "بازم میخوای آهنگی بفرستی به این پلیلیست؟", ct);
     }
-    private async Task<Message> SendAudioToChannel(ITelegramBotClient bot, long channelId, string fileId, string caption, CancellationToken ct)
+
+    private static string GenerateCaption(string userIdentifier, string? emoji, string name, string inviteLink)
+    {
+        emoji = emoji == null ? "" : emoji + " ";
+
+        var caption = $"{userIdentifier}\n\n<a href=\"{inviteLink}\">{emoji}{name}</a>";
+
+        return caption;
+    }
+
+    private async Task<Message> SendAudioToChannel(ITelegramBotClient bot, long channelId, string fileId,
+        string caption, CancellationToken ct)
     {
         return await bot.SendAudio(
             chatId: channelId,
@@ -61,14 +81,16 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
     private string FormatMessage(PlaylistsDto info, Message message)
     {
         var emoji = string.IsNullOrWhiteSpace(info.Emoji) ? "" : info.Emoji + " ";
-        
-        return $"{emoji}{info.Name}: <a href=\"{message.MessageLink()}\">لینک موزیک</a>";
+
+        return
+            $"- {emoji}{info.Name}: <a href=\"{info.ChannelInviteLink}\">لینک عضویت چنل</a> - <a href=\"{message.MessageLink()}\">لینک موزیک</a>";
     }
 
     private string FormatParentMessage(PlaylistsDto info, Message parentMessage, string childMessage)
     {
         var parent = info.Parent!;
-        return $"{parent.Emoji} {parent.Name}: <a href=\"{parentMessage.MessageLink()}\">لینک موزیک</a>\n{childMessage}";
+        return
+            $"{parent.Emoji} {parent.Name}: <a href=\"{info.ChannelInviteLink}\">لینک عضویت چنل</a> - <a href=\"{parentMessage.MessageLink()}\">لینک موزیک</a>\n\n{childMessage}";
     }
 
     private async Task SendText(ITelegramBotClient bot, long chatId, string text, CancellationToken ct)
@@ -79,5 +101,4 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
             parseMode: ParseMode.Html,
             cancellationToken: ct);
     }
-
 }
