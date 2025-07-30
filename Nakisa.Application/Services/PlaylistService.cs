@@ -24,7 +24,7 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
     public async Task<IEnumerable<MainPagePlaylistsDto>> GetPlaylistsByCategoryId(int categoryId)
     {
         var result = await GetAllProjectedAsync<MainPagePlaylistsDto>(
-            predicate: p => p.CategoryId == categoryId && p.ParentId == null,
+            predicate: p => p.CategoryId == categoryId && p.SubPlaylists.Any(),
             trackingBehavior: TrackingBehavior.AsNoTracking);
 
         return result;
