@@ -37,14 +37,14 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         var chatId = update.GetChatId();
         var session = _sessionService.GetOrCreate(chatId);
 
-        if (session.Flow == UserFlow.None)
+        if (IsStartCommand(update))
         {
-            if (IsStartCommand(update))
-            {
-                await HandleStartCommandAsync(bot, chatId, ct);
-                return;
-            }
-
+            _sessionService.Clear(chatId);
+            await HandleStartCommandAsync(bot, chatId, ct);
+            return;
+        }
+        else if (session.Flow == UserFlow.None)
+        {
             var callbackData = update.CallbackQuery?.Data;
 
             if (string.IsNullOrEmpty(callbackData))
