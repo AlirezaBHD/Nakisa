@@ -3,7 +3,7 @@
 public enum PlaylistBrowseStep
 {
     None,
-    SelectingPlaylist,
+    BrowsePlaylist,
     GettingPlaylistInfo,
     Completed
 }
