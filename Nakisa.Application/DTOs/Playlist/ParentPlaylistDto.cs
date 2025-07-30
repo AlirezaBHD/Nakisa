@@ -6,4 +6,5 @@ public class ParentPlaylistDto
     public string Name { get; set; }
     public string? Emoji { get; set; }
     public long TelegramChannelId { get; set; }
+    public string ChannelInviteLink { get; set; }
 }
