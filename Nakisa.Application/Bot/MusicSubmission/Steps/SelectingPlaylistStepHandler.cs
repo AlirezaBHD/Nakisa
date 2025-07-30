@@ -20,7 +20,7 @@ public class SelectingPlaylistStepHandler : IMusicSubmissionStepHandler
         _playlistService = playlistService;
     }
 
-    public Domain.Enums.MusicSubmissionStep Step => Domain.Enums.MusicSubmissionStep.SelectingPlaylist;
+    public MusicSubmissionStep Step => MusicSubmissionStep.SelectingPlaylist;
 
     public async Task HandleAsync(Update update, SongSubmissionDto data, ITelegramBotClient bot, CancellationToken ct)
     {
