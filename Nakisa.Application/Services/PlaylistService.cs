@@ -45,4 +45,13 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
             trackingBehavior: TrackingBehavior.AsNoTrackingWithIdentityResolution);
         return result;
     }
+
+    public async Task<List<BrowsePlaylistDto>> GetPlaylistsInfoByParentId(int playlistId)
+    {
+        var result = await GetAllProjectedAsync<BrowsePlaylistDto>(
+            predicate: p => p.ParentId == playlistId || p.Id == playlistId,
+            trackingBehavior: TrackingBehavior.AsNoTracking);
+        
+        return result.ToList();    
+    }
 }
