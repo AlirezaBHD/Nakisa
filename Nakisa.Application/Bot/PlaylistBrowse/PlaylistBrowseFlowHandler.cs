@@ -1,5 +1,10 @@
-﻿using Nakisa.Application.Bot.Interfaces;
+﻿using Nakisa.Application.Bot.Extensions;
+using Nakisa.Application.Bot.Interfaces;
+using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.Bot.Session;
+using Nakisa.Application.DTOs;
+using Nakisa.Application.Interfaces;
+using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -41,11 +46,21 @@ public class PlaylistBrowseFlowHandler : IPlaylistBrowseFlowHandler
 
     public async Task HandleAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct)
     {
-        throw new NotImplementedException();
-    }
+        var data = session.FlowData as PlaylistBrowseDto;
+        if (data == null)
+        {
+            await bot.SendMessage(update.GetChatId(), "خطا. لطفاً /start را بزنید.", cancellationToken: ct);
+            session.Flow = UserFlow.None;
+            session.FlowData = null;
+            _sessionService.Update(session);
+            return;
+        }
 
-    public Task HandleAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct)
-    {
-        throw new NotImplementedException();
+        if (_handlers.TryGetValue(data.Step, out var handler))
+        {
+            await handler.HandleAsync(update, data, bot, ct);
+        }
+
+        _sessionService.Update(session);
     }
 }
