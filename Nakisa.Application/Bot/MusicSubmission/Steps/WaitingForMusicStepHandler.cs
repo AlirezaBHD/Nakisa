@@ -6,6 +6,7 @@ using Nakisa.Application.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Nakisa.Application.Bot.MusicSubmission.Steps;
 
@@ -32,48 +33,55 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
             return;
         }
 
+        var userIdentifier = await _userService.GenerateCaption(chatId);
 
         var fileId = audio.FileId;
-        var userIdentifier = await _userService.GenerateCaption(chatId);
+
         var playlistsInfo = await _playlistService.GetPlaylistsInfo(data.TargetPlaylistId);
 
-        var messageCaption = GenerateCaption(userIdentifier, playlistsInfo.Emoji, playlistsInfo.Name,
-            playlistsInfo.ChannelInviteLink);
+        await ProcessPlaylists(playlistsInfo);
 
-        var childMessage = await SendAudioToChannel(bot, playlistsInfo.TelegramChannelId, fileId, messageCaption, ct);
-
-        var resultMessage = FormatMessage(playlistsInfo, childMessage);
-
-        if (playlistsInfo.Parent is not null)
-        {
-            messageCaption = GenerateCaption(userIdentifier, playlistsInfo.Parent.Emoji, playlistsInfo.Parent.Name,
-                playlistsInfo.Parent.ChannelInviteLink);
-            
-            var parentMessage =
-                await SendAudioToChannel(bot, playlistsInfo.Parent.TelegramChannelId, fileId, messageCaption, ct);
-            resultMessage = FormatParentMessage(playlistsInfo, parentMessage, resultMessage);
-        }
-
-        await SendText(bot, chatId, resultMessage, ct);
         await SendText(bot, chatId, "بازم میخوای آهنگی بفرستی به این پلیلیست؟", ct);
+
+        async Task ProcessPlaylists(IEnumerable<PlaylistsDto> playlists)
+        {
+            foreach (var playlist in playlists)
+            {
+                var messageCaption = GenerateCaption(userIdentifier, playlist.Emoji, playlist.Name,
+                    playlist.ChannelInviteLink);
+
+                var button = new InlineKeyboardMarkup([
+                    [
+                        InlineKeyboardButton.WithUrl("عضویت", playlist.ChannelInviteLink)
+                    ]
+                ]);
+
+                var childMessage =
+                    await SendAudioToChannel(bot, playlist.TelegramChannelId, fileId, messageCaption, button, ct);
+
+                var resultMessage = FormatMessage(playlist, childMessage);
+                await SendText(bot, chatId, resultMessage, ct);
+            }
+        }
     }
 
     private static string GenerateCaption(string userIdentifier, string? emoji, string name, string inviteLink)
     {
         emoji = emoji == null ? "" : emoji + " ";
 
-        var caption = $"{userIdentifier}\n\n<a href=\"{inviteLink}\">{emoji}{name}</a>";
+        var caption = $"{userIdentifier}\n\n<a href=\"{inviteLink}\">- {emoji}{name}</a>";
 
         return caption;
     }
 
     private async Task<Message> SendAudioToChannel(ITelegramBotClient bot, long channelId, string fileId,
-        string caption, CancellationToken ct)
+        string caption,InlineKeyboardMarkup button, CancellationToken ct)
     {
         return await bot.SendAudio(
             chatId: channelId,
             audio: fileId,
             caption: caption,
+            replyMarkup:button,
             parseMode: ParseMode.Html,
             cancellationToken: ct);
     }
@@ -83,14 +91,7 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
         var emoji = string.IsNullOrWhiteSpace(info.Emoji) ? "" : info.Emoji + " ";
 
         return
-            $"- {emoji}{info.Name}: <a href=\"{info.ChannelInviteLink}\">لینک عضویت چنل</a> - <a href=\"{message.MessageLink()}\">لینک موزیک</a>";
-    }
-
-    private string FormatParentMessage(PlaylistsDto info, Message parentMessage, string childMessage)
-    {
-        var parent = info.Parent!;
-        return
-            $"{parent.Emoji} {parent.Name}: <a href=\"{info.ChannelInviteLink}\">لینک عضویت چنل</a> - <a href=\"{parentMessage.MessageLink()}\">لینک موزیک</a>\n\n{childMessage}";
+            $"{emoji}{info.Name}: <a href=\"{message.MessageLink()}\">لینک موزیک</a>";
     }
 
     private async Task SendText(ITelegramBotClient bot, long chatId, string text, CancellationToken ct)
