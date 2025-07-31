@@ -29,20 +29,28 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
 
         return result;
     }
-    
+
     public async Task<List<MainPagePlaylistsDto>> GetPlaylistsByParentId(int playlistId)
     {
         var result = await GetAllProjectedAsync<MainPagePlaylistsDto>(
             predicate: p => p.ParentId == playlistId || p.Id == playlistId,
             trackingBehavior: TrackingBehavior.AsNoTracking);
-        
+
         return result.ToList();
     }
 
-    public async Task<PlaylistsDto> GetPlaylistsInfo(int playlistId)
+    public async Task<IEnumerable<PlaylistsDto>> GetPlaylistsInfo(int playlistId)
     {
-        var result = await GetByIdProjectedAsync<PlaylistsDto>(playlistId,
+        var query = Queryable
+            .Where(p => p.Id == playlistId || p.Id == Queryable
+                .Where(x => x.Id == playlistId)
+                .Select(x => x.ParentId)
+                .FirstOrDefault());
+        
+        var result = await GetAllProjectedAsync<PlaylistsDto>(query: query,
+            includes: [p => p.Parent!],
             trackingBehavior: TrackingBehavior.AsNoTrackingWithIdentityResolution);
+
         return result;
     }
 
@@ -51,7 +59,7 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
         var result = await GetAllProjectedAsync<BrowsePlaylistDto>(
             predicate: p => p.ParentId == playlistId || p.Id == playlistId,
             trackingBehavior: TrackingBehavior.AsNoTracking);
-        
-        return result.ToList();    
+
+        return result.ToList();
     }
 }
