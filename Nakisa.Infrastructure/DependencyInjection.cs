@@ -30,6 +30,8 @@ public static class DependencyInjection
         
         services.AddScoped<IRegisterFlowHandler, RegisterFlowHandler>();
         
+        services.AddScoped<IBotNavigationService, BotNavigationService>();
+        
         services.AddScoped<IRegisterStepHandler,ChannelLinkPrefixStepHandler>();
         services.AddScoped<IRegisterStepHandler,ChannelPrefixStepHandler>();
         services.AddScoped<IRegisterStepHandler,ChooseIdentityStepHandler>();
