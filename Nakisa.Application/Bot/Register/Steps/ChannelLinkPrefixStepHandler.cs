@@ -12,9 +12,11 @@ namespace Nakisa.Application.Bot.Register.Steps;
 public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
 {
     private readonly IUserService _userService;
-    public ChannelLinkPrefixStepHandler(IUserService userService)
+    private readonly IBotNavigationService _navigation;
+    public ChannelLinkPrefixStepHandler(IUserService userService, IBotNavigationService navigation)
     {
         _userService = userService;
+        _navigation = navigation;
     }
     public RegisterStep Step => RegisterStep.ChannelLinkPrefix;
 
@@ -34,6 +36,8 @@ public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
                 chatId: chatId,
                 text: "ثبت نام موفق",
                 cancellationToken: ct);
+
+            await _navigation.SendHomePageAsync(bot, chatId, ct);
         }
         else
         {
@@ -42,9 +46,5 @@ public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
                 text: "لینک ارسال شده اشتباه است \nفرمت صحیح:\n@TheOsservatore\nt.me/TheOsservatore\nhttps://t.me/TheOsservatore",
                 cancellationToken: ct);
         }
-        
-        
-        
-        
     }
 }
