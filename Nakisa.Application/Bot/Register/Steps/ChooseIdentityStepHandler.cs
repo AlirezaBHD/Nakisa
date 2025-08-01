@@ -12,9 +12,11 @@ namespace Nakisa.Application.Bot.Register.Steps;
 public class ChooseIdentityStepHandler : IRegisterStepHandler
 {
     private readonly IUserService _userService;
-    public ChooseIdentityStepHandler(IUserService userService)
+    private readonly IBotNavigationService _navigation;
+    public ChooseIdentityStepHandler(IUserService userService, IBotNavigationService navigation)
     {
         _userService = userService;
+        _navigation = navigation;
     }
     public RegisterStep Step => RegisterStep.ChooseIdentity;
 
@@ -63,6 +65,9 @@ public class ChooseIdentityStepHandler : IRegisterStepHandler
                     messageId: messageId,
                     text: "ثبت نام موفق",
                     cancellationToken: ct);
+                
+                await _navigation.SendHomePageAsync(bot, chatId, ct);
+
                 break;
         }
     }
