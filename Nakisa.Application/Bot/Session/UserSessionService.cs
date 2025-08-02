@@ -20,5 +20,9 @@ public class UserSessionService : IUserSessionService
 
     public void Update(UserSession session) => _sessions[session.ChatId] = session;
 
-    public void Clear(long chatId) => _sessions.Remove(chatId);
+    public void Clear(long chatId)
+    {
+        GetOrCreate(chatId).Flow = UserFlow.None;
+        _sessions.Remove(chatId);
+    }
 }
