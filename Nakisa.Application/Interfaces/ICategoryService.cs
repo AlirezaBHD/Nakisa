@@ -6,4 +6,5 @@ namespace Nakisa.Application.Interfaces;
 public interface ICategoryService : IService<Category>
 {
     Task<IEnumerable<GetCategoryDto>> GetCategories();
+    Task<IEnumerable<BrowseCategoryDto>> BrowsePlaylistAsync();
 }

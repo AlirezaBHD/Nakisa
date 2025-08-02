@@ -28,4 +28,12 @@ public class CategoryService : Service<Category>, ICategoryService
 
         return result;
     }
+
+    public async Task<IEnumerable<BrowseCategoryDto>> BrowsePlaylistAsync()
+    {
+        var result = await GetAllProjectedAsync<BrowseCategoryDto>(includes: [c => c.Playlists],
+            trackingBehavior:TrackingBehavior.AsNoTrackingWithIdentityResolution);
+
+        return result;
+    }
 }

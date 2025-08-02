@@ -11,9 +11,11 @@ namespace Nakisa.Application.Bot.Register.Steps;
 public class ChannelPrefixStepHandler : IRegisterStepHandler
 {
     private readonly IUserService _userService;
-    public ChannelPrefixStepHandler(IUserService userService)
+    private readonly IBotNavigationService _navigation;
+    public ChannelPrefixStepHandler(IUserService userService, IBotNavigationService navigation)
     {
         _userService = userService;
+        _navigation = navigation;
     }
     public RegisterStep Step => RegisterStep.ChannelPrefix;
 
@@ -48,6 +50,8 @@ public class ChannelPrefixStepHandler : IRegisterStepHandler
                     messageId: messageId,
                     text: "ثبت نام موفق",
                     cancellationToken: ct);
+                
+                await _navigation.SendHomePageAsync(bot, chatId, ct);
                         
                 break;
                     

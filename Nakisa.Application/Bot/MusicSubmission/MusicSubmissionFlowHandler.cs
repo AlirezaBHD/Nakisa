@@ -10,9 +10,9 @@ using Telegram.Bot.Types;
 
 namespace Nakisa.Application.Bot.MusicSubmission;
 
-public class MusicSubmissionFlowHandler : ISongSubmitFlowHandler
+public class MusicSubmissionFlowHandler : IMusicSubmitFlowHandler
 {
-    private readonly Dictionary<Domain.Enums.MusicSubmissionStep, IMusicSubmissionStepHandler> _handlers;
+    private readonly Dictionary<MusicSubmissionStep, IMusicSubmissionStepHandler> _handlers;
     private readonly IUserSessionService _sessionService;
     private readonly ICategoryService _categoryService;
 
@@ -26,7 +26,7 @@ public class MusicSubmissionFlowHandler : ISongSubmitFlowHandler
     public async Task StartAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct)
     {
         session.Flow = UserFlow.SubmittingSong;
-        session.FlowData = new SongSubmissionDto() { Step = Domain.Enums.MusicSubmissionStep.SelectingPlaylist };
+        session.FlowData = new SongSubmissionDto() { Step = MusicSubmissionStep.SelectingPlaylist };
         _sessionService.Update(session);
         
         var chatId = update.GetChatId();

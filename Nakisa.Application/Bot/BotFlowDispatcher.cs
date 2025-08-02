@@ -14,20 +14,20 @@ public class BotFlowDispatcher : IBotFlowDispatcher
 {
     private readonly IUserSessionService _sessionService;
     private readonly IRegisterFlowHandler _registerHandler;
-    private readonly ISongSubmitFlowHandler _songHandler;
+    private readonly IMusicSubmitFlowHandler _musicHandler;
     private readonly IPlaylistBrowseFlowHandler _playlistHandler;
     private readonly IUserService _userService;
 
     public BotFlowDispatcher(
         IUserSessionService sessionService,
         IRegisterFlowHandler registerHandler,
-        ISongSubmitFlowHandler songHandler,
+        IMusicSubmitFlowHandler musicHandler,
         IPlaylistBrowseFlowHandler playlistHandler,
         IUserService userService)
     {
         _sessionService = sessionService;
         _registerHandler = registerHandler;
-        _songHandler = songHandler;
+        _musicHandler = musicHandler;
         _playlistHandler = playlistHandler;
         _userService = userService;
     }
@@ -37,14 +37,14 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         var chatId = update.GetChatId();
         var session = _sessionService.GetOrCreate(chatId);
 
-        if (session.Flow == UserFlow.None)
+        if (IsStartCommand(update))
         {
-            if (IsStartCommand(update))
-            {
-                await HandleStartCommandAsync(bot, chatId, ct);
-                return;
-            }
-
+            _sessionService.Clear(chatId);
+            await HandleStartCommandAsync(bot, chatId, ct);
+            return;
+        }
+        else if (session.Flow == UserFlow.None)
+        {
             var callbackData = update.CallbackQuery?.Data;
 
             if (string.IsNullOrEmpty(callbackData))
@@ -89,7 +89,7 @@ public class BotFlowDispatcher : IBotFlowDispatcher
                 break;
 
             case "SubmitSong":
-                await StartFlowAsync(bot, update, session, UserFlow.SubmittingSong, _songHandler.StartAsync, ct);
+                await StartFlowAsync(bot, update, session, UserFlow.SubmittingSong, _musicHandler.StartAsync, ct);
                 break;
 
             case "ViewPlaylists":
@@ -120,7 +120,7 @@ public class BotFlowDispatcher : IBotFlowDispatcher
                 break;
 
             case UserFlow.SubmittingSong:
-                await _songHandler.HandleAsync(bot, update, session, ct);
+                await _musicHandler.HandleAsync(bot, update, session, ct);
                 break;
 
             case UserFlow.BrowsingPlaylists:

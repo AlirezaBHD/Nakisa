@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace Nakisa.Application.Bot.Interfaces;
 
-public interface ISongSubmitFlowHandler
+public interface IMusicSubmitFlowHandler
 {
     Task StartAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct);
     Task HandleAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct);

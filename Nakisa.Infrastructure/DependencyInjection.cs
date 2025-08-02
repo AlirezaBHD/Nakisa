@@ -4,6 +4,7 @@ using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.MusicSubmission;
 using Nakisa.Application.Bot.MusicSubmission.Steps;
 using Nakisa.Application.Bot.PlaylistBrowse;
+using Nakisa.Application.Bot.PlaylistBrowse.Steps;
 using Nakisa.Application.Bot.Register;
 using Nakisa.Application.Bot.Register.Steps;
 using Nakisa.Application.Bot.Session;
@@ -23,11 +24,13 @@ public static class DependencyInjection
         
         services.AddScoped<IPlaylistBrowseFlowHandler, PlaylistBrowseFlowHandler>();
         
-        services.AddScoped<ISongSubmitFlowHandler,MusicSubmissionFlowHandler>();
+        services.AddScoped<IMusicSubmitFlowHandler,MusicSubmissionFlowHandler>();
         
         services.AddSingleton<IUserSessionService, UserSessionService>();
         
         services.AddScoped<IRegisterFlowHandler, RegisterFlowHandler>();
+        
+        services.AddScoped<IBotNavigationService, BotNavigationService>();
         
         services.AddScoped<IRegisterStepHandler,ChannelLinkPrefixStepHandler>();
         services.AddScoped<IRegisterStepHandler,ChannelPrefixStepHandler>();
@@ -38,6 +41,8 @@ public static class DependencyInjection
         
         services.AddScoped<IMusicSubmissionStepHandler,SelectingPlaylistStepHandler>();
         services.AddScoped<IMusicSubmissionStepHandler,WaitingForMusicStepHandler>();
+        
+        services.AddScoped<IPlaylistBrowseStepHandler,BrowsePlaylistStepHandler>();
         
         services.AddScoped(typeof(IService<>), typeof(Service<>));
         services.AddScoped<IUserService,UserService>();

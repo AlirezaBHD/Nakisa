@@ -23,7 +23,12 @@ public class BotService : BackgroundService
         _logger = logger;
         _scopeFactory = scopeFactory;
         var token = config["TelegramBot:Token"];
-        _bot = new TelegramBotClient(token!);
+        
+        var proxy = new WebProxy("http://127.0.0.1:8889");
+        var handler = new HttpClientHandler { Proxy = proxy, UseProxy = true };
+        var client = new HttpClient(handler, disposeHandler: true);
+        
+        _bot = new TelegramBotClient(token!, client);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

@@ -77,13 +77,13 @@ public class UserService : Service<User>, IUserService
         var captionIdentifier = user.CaptionIdentifier;
 
         var channelIncluding = user.ChannelIncluding;
-        
+
         var identifier = string.Empty;
         switch (captionIdentifier)
         {
             case CaptionIdentifierType.TelegramName:
 
-                // identifier = user.TelegramName;
+                identifier = user.FirstName;
                 break;
 
             case CaptionIdentifierType.Nickname:
@@ -93,17 +93,17 @@ public class UserService : Service<User>, IUserService
                 identifier = "ناشناس";
                 break;
             case CaptionIdentifierType.TelegramNameAndUsername:
-                // identifier = "ناشناس";
+                identifier = $"<a href=\"https://t.me/{user.Username}\">{user.FirstName!}</a>";
                 break;
             case CaptionIdentifierType.TelegramNameAndChannelName:
-                //
+                identifier = $"<a href=\"{user.PersonChannelLink}\">{user.FirstName!}</a>";
                 break;
 
             case CaptionIdentifierType.NicknameAndUsername:
                 identifier = $"({user.Nickname!})[@{user.Username}]";
                 break;
             case CaptionIdentifierType.NicknameAndChannelName:
-                identifier = $"<{user.Nickname!}>[@{user.PersonChannelLink}]";
+                identifier = $"<a href=\"{user.PersonChannelLink}\">{user.Nickname!}</a>";
                 break;
         }
 
@@ -115,19 +115,21 @@ public class UserService : Service<User>, IUserService
 
             case ChannelIncludingType.ChannelName:
                 // includedChannel = user.PersonChannelLink.Name;
+                includedChannel = $"<{"Channel Name"}>";  //Fixe
                 break;
 
             case ChannelIncludingType.ChannelNameWithLink:
-                // includedChannel = user.PersonChannelLink.Name;
+                includedChannel = $"<a href=\"{user.PersonChannelLink}\">{"Channel Name"}</a>"; //Fixe
                 break;
         }
-        
+
         var caption = identifier;
 
-        if (! string.IsNullOrEmpty(includedChannel))
+        if (!string.IsNullOrEmpty(includedChannel))
         {
             caption = $"{caption}\n{includedChannel}";
         }
+
         return caption;
     }
 }
