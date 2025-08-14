@@ -51,7 +51,7 @@ public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
         {
             await bot.SendMessage(
                 chatId: chatId,
-                text: "لینک ارسال شده اشتباه است \nفرمت صحیح:\n@TheOsservatore\nt.me/TheOsservatore\nhttps://t.me/TheOsservatore",
+                text: "لینک ارسال شده اشتباه است \nفرمت صحیح:\nhttps://t.me/+WZHMwFGZM4NlMTZk\nt.me/+WZHMwFGZM4NlMTZk\n@TheOsservatore\nt.me/TheOsservatore\nhttps://t.me/TheOsservatore",
                 cancellationToken: ct);
         }
     }
