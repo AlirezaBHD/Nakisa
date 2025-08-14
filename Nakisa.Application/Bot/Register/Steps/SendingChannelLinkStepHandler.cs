@@ -2,6 +2,7 @@ using Nakisa.Application.Bot.Extensions;
 using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.DTOs;
+using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -11,14 +12,22 @@ namespace Nakisa.Application.Bot.Register.Steps;
 
 public class SendingChannelLinkStepHandler : IRegisterStepHandler
 {
+    private readonly ITelegramClientService _client;
+
+    public SendingChannelLinkStepHandler(ITelegramClientService client)
+    {
+        _client = client;
+    }
+
     public RegisterStep Step => RegisterStep.SendingChannelLink;
 
     public async Task HandleAsync(Update update, RegisterDto data, ITelegramBotClient bot, CancellationToken ct)
     {
         var chatId = update.GetChatId();
         var channelLink = update.Message!.Text;
-
-        if (channelLink.TryNormalizeTelegramChannelLink(out var cleanLink))
+        var isChannelFormatValid = channelLink.TryNormalizeTelegramChannelLink(out var cleanLink);
+        var channelName = await _client.GetChannelInfoFromLinkAsync(cleanLink);
+        if (isChannelFormatValid && channelName != null)
         {
             data.PersonChannelLink = cleanLink;
                 
