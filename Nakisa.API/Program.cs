@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Nakisa.Application.Interfaces;
 using Nakisa.Application.Mapping;
 using Nakisa.Infrastructure;
 using Nakisa.Persistence;
@@ -19,7 +18,7 @@ services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile).Assembly);
 
-services.AddApplicationServices();
+services.AddInfrastructureServices(builder.Configuration);
 
 services.AddPersistenceServices();
 

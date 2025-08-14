@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nakisa.Application.Bot;
 using Nakisa.Application.Bot.Interfaces;
@@ -10,13 +11,15 @@ using Nakisa.Application.Bot.Register.Steps;
 using Nakisa.Application.Bot.Session;
 using Nakisa.Application.Interfaces;
 using Nakisa.Application.Services;
+using Nakisa.Contracts.Bot;
 using Nakisa.Infrastructure.Bot;
+using Nakisa.Infrastructure.BotClient;
 
 namespace Nakisa.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddHostedService<BotService>();
         
@@ -49,6 +52,9 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService,CategoryService>();
         services.AddScoped<IPlaylistService,PlaylistService>();
         services.AddScoped<IMusicService,MusicService>();
+        
+        services.Configure<TelegramClientOptions>(configuration.GetSection("TelegramClient"));
+        services.AddSingleton<ITelegramClientService, TelegramClientService>();
 
         return services;
     }
