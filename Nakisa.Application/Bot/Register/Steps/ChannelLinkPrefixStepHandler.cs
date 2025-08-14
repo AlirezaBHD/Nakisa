@@ -13,10 +13,12 @@ public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
 {
     private readonly IUserService _userService;
     private readonly IBotNavigationService _navigation;
-    public ChannelLinkPrefixStepHandler(IUserService userService, IBotNavigationService navigation)
+    private readonly ITelegramClientService _client;
+    public ChannelLinkPrefixStepHandler(IUserService userService, IBotNavigationService navigation, ITelegramClientService client)
     {
         _userService = userService;
         _navigation = navigation;
+        _client = client;
     }
     public RegisterStep Step => RegisterStep.ChannelLinkPrefix;
 
@@ -24,13 +26,19 @@ public class ChannelLinkPrefixStepHandler : IRegisterStepHandler
     {
         var chatId = update.GetChatId();
         var channelLink = update.Message!.Text;
-        
-        if (channelLink.TryNormalizeTelegramChannelLink(out var cleanLink, publicOnly: true))
+        var isChannelFormatValid = channelLink.TryNormalizeTelegramChannelLink(out var cleanLink);
+        var channelName = await _client.GetChannelInfoFromLinkAsync(cleanLink);
+        if (isChannelFormatValid && channelName != null)
         {
+            await bot.SendMessage(
+                chatId: chatId,
+                text: $"چنل {channelName} برای شما ثبت شد",
+                cancellationToken: ct);
+            
             data.PersonChannelLink = cleanLink;
-
             await _userService.AddOrUpdate(data);
-        
+            
+            
             data.Step = RegisterStep.Completed;
             await bot.SendMessage(
                 chatId: chatId,
