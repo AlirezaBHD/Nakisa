@@ -21,40 +21,50 @@ public class ChannelPrefixStepHandler : IRegisterStepHandler
 
     public async Task HandleAsync(Update update, RegisterDto data, ITelegramBotClient bot, CancellationToken ct)
     {
-        var callBack = update.CallbackQuery!.Data;
+        var callbackData = update.CallbackQuery!.Data;
         var chatId = update.GetChatId();
         var messageId = update.GetMessageId();
         
-        switch (callBack)
+        if (callbackData == "Yes")
         {
-            case "Yes":
-                data.Step = RegisterStep.ChannelLinkPrefix;
-                data.ChannelIncluding = ChannelIncludingType.ChannelNameWithLink;
-                        
-                await bot.EditMessageText(
-                    chatId: chatId,
-                    messageId: messageId,
-                    text: "لینک پابلیک چنلتو بفرست",
-                    cancellationToken: ct);
-                        
-                break;
-                    
-            case "No":
-                
-                await _userService.AddOrUpdate(data);
-
-                data.Step = RegisterStep.Completed;
-                        
-                await bot.EditMessageText(
-                    chatId: chatId,
-                    messageId: messageId,
-                    text: "ثبت نام موفق",
-                    cancellationToken: ct);
-                
-                await _navigation.SendHomePageAsync(bot, chatId, ct);
-                        
-                break;
-                    
+            await HandleYesOptionAsync(data, chatId, messageId, bot, ct);
         }
+        else if (callbackData == "No")
+        {
+            await CompleteRegistrationAsync(data, chatId, messageId, bot, ct);
+        }
+    }
+    private async Task HandleYesOptionAsync(RegisterDto data, long chatId, int messageId, ITelegramBotClient bot, CancellationToken ct)
+    {
+        data.Step = RegisterStep.ChannelLinkPrefix;
+        data.ChannelIncluding = ChannelIncludingType.ChannelNameWithLink;
+
+        if (string.IsNullOrEmpty(data.PersonChannelLink))
+        {
+            await bot.EditMessageText(
+                chatId: chatId,
+                messageId: messageId,
+                text: "لینک چنلتو بفرست",
+                cancellationToken: ct);
+        }
+        else
+        {
+            await CompleteRegistrationAsync(data, chatId, messageId, bot, ct);
+        }
+    }
+
+    private async Task CompleteRegistrationAsync(RegisterDto data, long chatId, int messageId, ITelegramBotClient bot, CancellationToken ct)
+    {
+        await _userService.AddOrUpdate(data);
+
+        data.Step = RegisterStep.Completed;
+
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "ثبت نام موفق",
+            cancellationToken: ct);
+
+        await _navigation.SendHomePageAsync(bot, chatId, ct);
     }
 }
