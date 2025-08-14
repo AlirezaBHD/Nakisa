@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nakisa.Application.Bot;
@@ -12,8 +13,11 @@ using Nakisa.Application.Bot.Session;
 using Nakisa.Application.Interfaces;
 using Nakisa.Application.Services;
 using Nakisa.Contracts.Bot;
+using Nakisa.Domain.Interfaces;
 using Nakisa.Infrastructure.Bot;
 using Nakisa.Infrastructure.BotClient;
+using Nakisa.Persistence;
+using Nakisa.Persistence.Repositories;
 
 namespace Nakisa.Infrastructure;
 
@@ -55,7 +59,21 @@ public static class DependencyInjection
         
         services.Configure<TelegramClientOptions>(configuration.GetSection("TelegramClient"));
         services.AddSingleton<ITelegramClientService, TelegramClientService>();
-
+        
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseNpgsql(
+                    configuration.GetConnectionString("DefaultConnection"),
+                    npgsqlOptions => npgsqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+                )
+                .UseSnakeCaseNamingConvention());
+        
+        
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IUserRepository,UserRepository>();
+        services.AddScoped<ICategoryRepository,CategoryRepository>();
+        services.AddScoped<IPlaylistRepository,PlaylistRepository>();
+        services.AddScoped<IMusicRepository,MusicRepository>();
+        
         return services;
     }
 }
