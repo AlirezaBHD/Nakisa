@@ -14,11 +14,13 @@ public class UserService : Service<User>, IUserService
     #region Injection
 
     private readonly IMapper _mapper;
+    private readonly ITelegramClientService _client;
 
-    public UserService(IMapper mapper, IUserRepository repository)
+    public UserService(IMapper mapper, IUserRepository repository, ITelegramClientService client)
         : base(mapper, repository)
     {
         _mapper = mapper;
+        _client = client;
     }
 
     #endregion
@@ -114,12 +116,12 @@ public class UserService : Service<User>, IUserService
                 break;
 
             case ChannelIncludingType.ChannelName:
-                // includedChannel = user.PersonChannelLink.Name;
-                includedChannel = $"<{"Channel Name"}>";  //Fixe
+                includedChannel = await _client.GetChannelInfoFromLinkAsync(user.PersonChannelLink!);
                 break;
 
             case ChannelIncludingType.ChannelNameWithLink:
-                includedChannel = $"<a href=\"{user.PersonChannelLink}\">{"Channel Name"}</a>"; //Fixe
+                var channelName = await _client.GetChannelInfoFromLinkAsync(user.PersonChannelLink!);
+                includedChannel = $"<a href=\"{user.PersonChannelLink}\">{channelName}</a>";
                 break;
         }
 
