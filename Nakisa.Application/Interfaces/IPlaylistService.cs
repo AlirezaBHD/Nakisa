@@ -10,4 +10,5 @@ public interface IPlaylistService : IService<Playlist>
     Task<List<MainPagePlaylistsDto>> GetPlaylistsByParentId(int playlistId);
     Task<IEnumerable<PlaylistsDto>> GetPlaylistsInfo(int playlistId);
     Task<List<BrowsePlaylistDto>> GetPlaylistsInfoByParentId(int playlistId);
+    Task CreateActivePlaylists();
 }
