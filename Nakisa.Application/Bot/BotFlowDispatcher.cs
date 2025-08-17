@@ -16,20 +16,19 @@ public class BotFlowDispatcher : IBotFlowDispatcher
     private readonly IRegisterFlowHandler _registerHandler;
     private readonly IMusicSubmitFlowHandler _musicHandler;
     private readonly IPlaylistBrowseFlowHandler _playlistHandler;
-    private readonly IUserService _userService;
+    private readonly IBotNavigationService _navigation;
 
     public BotFlowDispatcher(
         IUserSessionService sessionService,
         IRegisterFlowHandler registerHandler,
         IMusicSubmitFlowHandler musicHandler,
-        IPlaylistBrowseFlowHandler playlistHandler,
-        IUserService userService)
+        IPlaylistBrowseFlowHandler playlistHandler, IBotNavigationService navigation)
     {
         _sessionService = sessionService;
         _registerHandler = registerHandler;
         _musicHandler = musicHandler;
         _playlistHandler = playlistHandler;
-        _userService = userService;
+        _navigation = navigation;
     }
 
     public async Task DispatchAsync(ITelegramBotClient bot, Update update, CancellationToken ct)
@@ -37,10 +36,10 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         var chatId = update.GetChatId();
         var session = _sessionService.GetOrCreate(chatId);
 
-        if (IsStartCommand(update))
+        if (ShouldHeadToMainMenu(update))
         {
             _sessionService.Clear(chatId);
-            await HandleStartCommandAsync(bot, chatId, ct);
+            await _navigation.SendHomePageAsync(bot, chatId, ct);
             return;
         }
         else if (session.Flow == UserFlow.None)
@@ -60,23 +59,21 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         await HandleFlowAsync(bot, update, session, ct);
     }
 
-    private bool IsStartCommand(Update update)
+    private bool ShouldHeadToMainMenu(Update update)
     {
-        return update.Message?.Text?.Trim().ToLower() == "/start";
-    }
+        var message = update.Message?.Text?.Trim().ToLower();
+        var callbackData = update.GetCallbackData().ToLower();
+        if (message == "/start" || message == "/cancel")
+        {
+            return true;
+        }
 
-    private async Task HandleStartCommandAsync(ITelegramBotClient bot, long chatId, CancellationToken ct)
-    {
-        var isUserExist = await _userService.IsUserExist(chatId);
-        var welcomeMessage = isUserExist
-            ? "سلام! یکی از گزینه‌های زیر رو انتخاب کن:"
-            : "سلام خوش اومدی! یکی از گزینه‌های زیر رو انتخاب کن:";
+        if (callbackData == "cancel" || callbackData == "home_page")
+        {
+            return true;
+        }
 
-        var keyboard = isUserExist
-            ? MainKeyboard.OldUserMainMenuButton()
-            : MainKeyboard.NewUserMainMenuButton();
-
-        await bot.SendMessage(chatId, welcomeMessage, replyMarkup: keyboard, cancellationToken: ct);
+        return false;
     }
 
     private async Task HandleCallbackCommandAsync(ITelegramBotClient bot, Update update, UserSession session,
