@@ -7,6 +7,7 @@ using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Types = Nakisa.Application.Bot.MusicSubmission.Constants.CallbackTypes;
 
 namespace Nakisa.Application.Bot.MusicSubmission.Steps;
 
@@ -32,15 +33,15 @@ public class SelectingPlaylistStepHandler : IMusicSubmissionStepHandler
         var parsed = CallbackDataParser.Parse(callbackData);
         switch (parsed.Type)
         {
-            case "category":
+            case Types.Category:
                 await HandleCategoryAsync(parsed.Id, bot, chatId, messageId, ct);
                 break;
 
-            case "playlist" when parsed.Action == "brows":
+            case Types.Playlist when parsed.Action == Types.PlaylistActions.Browse:
                 await HandlePlaylistBrowseAsync(parsed.Id, bot, chatId, messageId, ct);
                 break;
 
-            case "playlist" when parsed.Action == "submit":
+            case Types.Playlist when parsed.Action == Types.PlaylistActions.Submit:
                 await HandlePlaylistSubmitAsync(parsed.Id, bot, chatId, messageId, data, ct);
                 break;
 
