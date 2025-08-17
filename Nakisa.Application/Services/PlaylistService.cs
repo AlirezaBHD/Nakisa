@@ -26,7 +26,7 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
     public async Task<IEnumerable<MainPagePlaylistsDto>> GetPlaylistsByCategoryId(int categoryId)
     {
         var result = await GetAllProjectedAsync<MainPagePlaylistsDto>(
-            predicate: p => p.CategoryId == categoryId && p.SubPlaylists.Any(),
+            predicate: p => p.CategoryId == categoryId && p.IsActive && p.SubPlaylists.Any(),
             trackingBehavior: TrackingBehavior.AsNoTracking);
 
         return result;
@@ -35,7 +35,7 @@ public class PlaylistService : Service<Playlist>, IPlaylistService
     public async Task<List<MainPagePlaylistsDto>> GetPlaylistsByParentId(int playlistId)
     {
         var result = await GetAllProjectedAsync<MainPagePlaylistsDto>(
-            predicate: p => p.ParentId == playlistId || p.Id == playlistId,
+            predicate: p => (p.ParentId == playlistId || p.Id == playlistId) && p.IsActive,
             trackingBehavior: TrackingBehavior.AsNoTracking);
 
         return result.ToList();
