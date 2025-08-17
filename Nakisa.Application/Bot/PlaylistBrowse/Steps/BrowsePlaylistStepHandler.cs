@@ -1,6 +1,8 @@
 ﻿using Nakisa.Application.Bot.Extensions;
 using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
+using Nakisa.Application.Bot.MusicSubmission.Utils;
+using Nakisa.Application.Bot.PlaylistBrowse.Constants;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Enums;
@@ -26,49 +28,61 @@ public class BrowsePlaylistStepHandler : IPlaylistBrowseStepHandler
     {
         var chatId = update.GetChatId();
         var messageId = update.GetMessageId();
-        var callbackData = update.CallbackQuery?.Data ?? string.Empty;
+        var callbackData = update.GetCallbackData();
+        var parsed = CallbackDataParser.Parse(callbackData);
 
-        if (callbackData.StartsWith("category"))
+        switch (parsed.Type)
         {
-            var categoryId = int.Parse(callbackData.Split(":")[1]);
-            var playlists = await _playlistService.GetPlaylistsByCategoryId(categoryId);
-            var buttons = PlaylistBrowseKeyboard.CategoryPlaylistsButton(playlists);
-
-            await bot.EditMessageText(
-                chatId: chatId,
-                messageId: messageId,
-                text: "یه پلیلیست انتخاب کنید",
-                replyMarkup: buttons,
-                cancellationToken: ct);
+            case CallbackTypes.Category:
+                await HandleCategorySelection(parsed.Id, bot, chatId, messageId, ct);
+                break;
+            case CallbackTypes.Playlist:
+                await HandlePlaylistSelection(parsed.Id, bot, chatId, messageId, ct);
+                break;
+            default:
+                await ShowCategories(bot, chatId, messageId, ct);
+                break;
         }
+    }
 
-        else if (callbackData.StartsWith("playlist"))
-        {
-            var playlistId = int.Parse(callbackData.Split(":")[1]);
-            var playlists = await _playlistService.GetPlaylistsInfoByParentId(playlistId);
+    private async Task HandleCategorySelection(int categoryId, ITelegramBotClient bot, long chatId, int messageId,
+        CancellationToken ct)
+    {
+        var playlists = await _playlistService.GetPlaylistsByCategoryId(categoryId);
+        var buttons = PlaylistBrowseKeyboard.CategoryPlaylistsButton(playlists);
 
-            var buttons = PlaylistBrowseKeyboard.PlaylistsButton(playlists);
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "یه پلیلیست انتخاب کنید",
+            replyMarkup: buttons,
+            cancellationToken: ct);
+    }
 
-            await bot.EditMessageText(
-                chatId: chatId,
-                messageId: messageId,
-                text: "یه پلیلیست انتخاب کنید",
-                replyMarkup: buttons,
-                cancellationToken: ct);
-        }
+    private async Task HandlePlaylistSelection(int playlistId, ITelegramBotClient bot, long chatId, int messageId,
+        CancellationToken ct)
+    {
+        var playlists = await _playlistService.GetPlaylistsInfoByParentId(playlistId);
+        var buttons = PlaylistBrowseKeyboard.PlaylistsButton(playlists);
 
-        else
-        {
-            var categories = await _categoryService.GetCategories();
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "یه پلیلیست انتخاب کنید",
+            replyMarkup: buttons,
+            cancellationToken: ct);
+    }
 
-            var buttons = PlaylistBrowseKeyboard.CategoriesButton(categories);
+    private async Task ShowCategories(ITelegramBotClient bot, long chatId, int messageId, CancellationToken ct)
+    {
+        var categories = await _categoryService.GetCategories();
+        var buttons = PlaylistBrowseKeyboard.CategoriesButton(categories);
 
-            await bot.EditMessageText(
-                chatId: chatId,
-                messageId: messageId,
-                text: "یه دسته بندی یا پلیلیست انتخاب کنید",
-                replyMarkup: buttons,
-                cancellationToken: ct);
-        }
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "یه دسته بندی یا پلیلیست انتخاب کنید",
+            replyMarkup: buttons,
+            cancellationToken: ct);
     }
 }
