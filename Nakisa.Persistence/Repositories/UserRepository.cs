@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Nakisa.Domain.Entities;
 using Nakisa.Domain.Interfaces;
 
@@ -14,4 +15,10 @@ public class UserRepository : Repository<User>, IUserRepository
     }
     
     #endregion
+
+    public async Task<int> GetUserIdByChatId(long chatId)
+    {
+        var userId = await _context.Users.Where(u => u.ChatId == chatId).Select(u => u.Id).FirstOrDefaultAsync();
+        return userId;
+    }
 }
