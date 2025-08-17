@@ -41,4 +41,9 @@ public static class UpdateExtensions
                ?? update.CallbackQuery?.Message?.MessageId
                ?? 0;
     }
+    
+    public static string GetCallbackData(this Update update)
+    {
+        return update.CallbackQuery?.Data ?? string.Empty;
+    }
 }
