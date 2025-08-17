@@ -1,4 +1,5 @@
-﻿using Nakisa.Application.DTOs.Category;
+﻿using Types = Nakisa.Application.Bot.MusicSubmission.Constants.CallbackTypes;
+using Nakisa.Application.DTOs.Category;
 using Nakisa.Application.DTOs.Playlist;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -14,29 +15,18 @@ public static class MusicSubmissionKeyboard
         {
             keyboard.Add(new List<InlineKeyboardButton>
             {
-                InlineKeyboardButton.WithCallbackData($"-- {category.Name} --", $"category:{category.Id}")
+                InlineKeyboardButton.WithCallbackData(
+                    $"-- {category.Name} --",
+                    $"{Types.Category}:{category.Id}")
             });
 
-            var row = new List<InlineKeyboardButton>();
-            int count = 0;
+            var playlistRows = BuildKeyboard(
+                category.Playlists,
+                p => BuildButton($"{p.Emoji} {p.Name}", p.Id, Types.PlaylistActions.Browse),
+                rowSize: 2
+            );
 
-            foreach (var playlist in category.Playlists)
-            {
-                row.Add(InlineKeyboardButton.WithCallbackData($"{playlist.Emoji} {playlist.Name}",
-                    $"playlist:{playlist.Id}:brows"));
-                count++;
-
-                if (count % 2 == 0)
-                {
-                    keyboard.Add(row);
-                    row = new List<InlineKeyboardButton>();
-                }
-            }
-
-            if (row.Any())
-            {
-                keyboard.Add(row);
-            }
+            keyboard.AddRange(playlistRows);
         }
 
         return new InlineKeyboardMarkup(keyboard);
@@ -44,18 +34,62 @@ public static class MusicSubmissionKeyboard
 
     public static InlineKeyboardMarkup CategoryPlaylistsButton(IEnumerable<MainPagePlaylistsDto> playlists)
     {
+        var keyboard = BuildKeyboard(
+            playlists,
+            p => BuildButton($"{p.Emoji} {p.Name}", p.Id, Types.PlaylistActions.Browse),
+            rowSize: 3
+        );
+
+        return new InlineKeyboardMarkup(keyboard);
+    }
+
+    public static InlineKeyboardMarkup PlaylistsButton(List<MainPagePlaylistsDto> playlists)
+    {
         var keyboard = new List<List<InlineKeyboardButton>>();
 
-        var row = new List<InlineKeyboardButton>();
-        int count = 0;
-
-        foreach (var playlist in playlists)
+        var mainPlaylist = playlists.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.Emoji));
+        if (mainPlaylist != null)
         {
-            row.Add(InlineKeyboardButton.WithCallbackData($"{playlist.Emoji} {playlist.Name}",
-                $"playlist:{playlist.Id}:brows"));
-            count++;
+            playlists.Remove(mainPlaylist);
+            keyboard.Add(new List<InlineKeyboardButton>
+            {
+                BuildButton($"- {mainPlaylist.Emoji} {mainPlaylist.Name} -",
+                            mainPlaylist.Id,
+                            Types.PlaylistActions.Submit)
+            });
+        }
 
-            if (count % 3 == 0)
+        var otherRows = BuildKeyboard(
+            playlists,
+            p => BuildButton(p.Name, p.Id, Types.PlaylistActions.Submit),
+            rowSize: 2
+        );
+
+        keyboard.AddRange(otherRows);
+
+        return new InlineKeyboardMarkup(keyboard);
+    }
+
+    private static InlineKeyboardButton BuildButton(string text, int id, string action)
+    {
+        return InlineKeyboardButton.WithCallbackData(
+            text,
+            $"{Types.Playlist}:{id}:{action}"
+        );
+    }
+
+    private static List<List<InlineKeyboardButton>> BuildKeyboard<T>(
+        IEnumerable<T> items,
+        Func<T, InlineKeyboardButton> buttonFactory,
+        int rowSize)
+    {
+        var keyboard = new List<List<InlineKeyboardButton>>();
+        var row = new List<InlineKeyboardButton>();
+
+        foreach (var item in items)
+        {
+            row.Add(buttonFactory(item));
+            if (row.Count == rowSize)
             {
                 keyboard.Add(row);
                 row = new List<InlineKeyboardButton>();
@@ -63,55 +97,8 @@ public static class MusicSubmissionKeyboard
         }
 
         if (row.Any())
-        {
             keyboard.Add(row);
-        }
 
-        return new InlineKeyboardMarkup(keyboard);
-    }
-
-    public static InlineKeyboardMarkup PlaylistsButton(List<MainPagePlaylistsDto> playlists)
-    {
-        var mainPlaylist = playlists.FirstOrDefault(p => !string.IsNullOrWhiteSpace(p.Emoji));
-        if (mainPlaylist != null)
-        {
-            playlists.Remove(mainPlaylist);
-        }
-
-        var keyboard = new List<List<InlineKeyboardButton>>();
-
-        if (mainPlaylist != null)
-        {
-            keyboard.Add(new List<InlineKeyboardButton>
-            {
-                InlineKeyboardButton.WithCallbackData(
-                    $"- {mainPlaylist.Emoji} {mainPlaylist.Name} -",
-                    $"playlist:{mainPlaylist.Id}:submit"
-                )
-            });
-        }
-
-        for (int i = 0; i < playlists.Count; i += 2)
-        {
-            var row = new List<InlineKeyboardButton>();
-
-            row.Add(InlineKeyboardButton.WithCallbackData(
-                playlists[i].Name,
-                $"playlist:{playlists[i].Id}:submit"
-            ));
-
-            if (i + 1 < playlists.Count)
-            {
-                row.Add(InlineKeyboardButton.WithCallbackData(
-                    playlists[i + 1].Name,
-                    $"playlist:{playlists[i + 1].Id}:submit"
-                ));
-            }
-
-            keyboard.Add(row);
-        }
-
-        return new InlineKeyboardMarkup(keyboard);
-        
+        return keyboard;
     }
 }
