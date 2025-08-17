@@ -1,6 +1,7 @@
 ﻿using Nakisa.Application.Bot.Extensions;
 using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
+using Nakisa.Application.Bot.MusicSubmission.Utils;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Enums;
@@ -26,66 +27,84 @@ public class SelectingPlaylistStepHandler : IMusicSubmissionStepHandler
     {
         var chatId = update.GetChatId();
         var messageId = update.GetMessageId();
-        var callbackData = update.CallbackQuery?.Data ?? string.Empty;
-
-        if (callbackData.StartsWith("category"))
-        {
-            var categoryId = int.Parse(callbackData.Split(":")[1]);
-            var playlists = await _playlistService.GetPlaylistsByCategoryId(categoryId);
-            var buttons = MusicSubmissionKeyboard.CategoryPlaylistsButton(playlists);
-
-            await bot.EditMessageText(
-                chatId: chatId,
-                messageId: messageId,
-                text: "یه پلیلیست انتخاب کنید",
-                replyMarkup: buttons,
-                cancellationToken: ct);
-        }
+        var callbackData = update.GetCallbackData();
         
-        else if (callbackData.StartsWith("playlist"))
+        var parsed = CallbackDataParser.Parse(callbackData);
+        switch (parsed.Type)
         {
-            var playlistType = callbackData.Split(":")[2];
-            if (playlistType == "brows")
-            {
-                var playlistId = int.Parse(callbackData.Split(":")[1]);
-                var playlists = await _playlistService.GetPlaylistsByParentId(playlistId);
-                
-                var buttons = MusicSubmissionKeyboard.PlaylistsButton(playlists);
+            case "category":
+                await HandleCategoryAsync(parsed.Id, bot, chatId, messageId, ct);
+                break;
 
-                await bot.EditMessageText(
-                    chatId: chatId,
-                    messageId: messageId,
-                    text: "یه پلیلیست انتخاب کنید",
-                    replyMarkup: buttons,
-                    cancellationToken: ct);
-                
-                
-            }
-            else if (playlistType == "submit")
-            {
-                var playlistId = int.Parse(callbackData.Split(":")[1]);
-                await bot.EditMessageText(
-                    chatId: chatId,
-                    messageId: messageId,
-                    text: "موزیکتو بفرست تا به پلیلیست اضافش کنم",
-                    cancellationToken: ct);
-                data.Step = MusicSubmissionStep.WaitingForMusic;
-                data.TargetPlaylistId = playlistId;
-            }
+            case "playlist" when parsed.Action == "brows":
+                await HandlePlaylistBrowseAsync(parsed.Id, bot, chatId, messageId, ct);
+                break;
+
+            case "playlist" when parsed.Action == "submit":
+                await HandlePlaylistSubmitAsync(parsed.Id, bot, chatId, messageId, data, ct);
+                break;
+
+            default:
+                await ShowCategoriesAsync(bot, chatId, messageId, ct);
+                break;
         }
-        
-        else
-        {
-            var categories = await _categoryService.GetCategories();
+    }
 
-            var buttons = MusicSubmissionKeyboard.CategoriesButton(categories);
+    private async Task HandleCategoryAsync(int categoryId, ITelegramBotClient bot, long chatId, int messageId,
+        CancellationToken ct)
+    {
+        var playlists = await _playlistService.GetPlaylistsByCategoryId(categoryId);
+        var buttons = MusicSubmissionKeyboard.CategoryPlaylistsButton(playlists);
 
-            await bot.EditMessageText(
-                chatId: chatId,
-                messageId: messageId,
-                text: "یه دسته بندی یا پلیلیست انتخاب کنید",
-                replyMarkup: buttons,
-                cancellationToken: ct);
-        }
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "یه پلیلیست انتخاب کنید",
+            replyMarkup: buttons,
+            cancellationToken: ct);
+    }
+
+    
+    private async Task HandlePlaylistBrowseAsync(int playlistId, ITelegramBotClient bot, long chatId, int messageId,
+        CancellationToken ct)
+    {
+        var playlists = await _playlistService.GetPlaylistsByParentId(playlistId);
+
+        var buttons = MusicSubmissionKeyboard.PlaylistsButton(playlists);
+
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "یه پلیلیست انتخاب کنید",
+            replyMarkup: buttons,
+            cancellationToken: ct);
+    }
+
+    private async Task HandlePlaylistSubmitAsync(int playlistId, ITelegramBotClient bot, long chatId, int messageId,
+        SongSubmissionDto data, CancellationToken ct)
+    {
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "موزیکتو بفرست تا به پلیلیست اضافش کنم",
+            cancellationToken: ct);
+
+        data.Step = MusicSubmissionStep.WaitingForMusic;
+        data.TargetPlaylistId = playlistId;
+    }
+
+    
+    private async Task ShowCategoriesAsync(ITelegramBotClient bot, long chatId, int messageId, CancellationToken ct)
+    {
+        var categories = await _categoryService.GetCategories();
+
+        var buttons = MusicSubmissionKeyboard.CategoriesButton(categories);
+
+        await bot.EditMessageText(
+            chatId: chatId,
+            messageId: messageId,
+            text: "یه دسته بندی یا پلیلیست انتخاب کنید",
+            replyMarkup: buttons,
+            cancellationToken: ct);
     }
 }
