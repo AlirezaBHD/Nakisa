@@ -1,13 +1,13 @@
 ﻿using Nakisa.Application.Bot.Extensions;
 using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
-using Nakisa.Application.Bot.MusicSubmission.Utils;
-using Nakisa.Application.Bot.PlaylistBrowse.Constants;
+using Nakisa.Application.Bot.PlaylistBrowse.Utils;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Type = Nakisa.Application.Bot.PlaylistBrowse.Constants.CallbackTypes;
 
 namespace Nakisa.Application.Bot.PlaylistBrowse.Steps;
 
@@ -33,10 +33,10 @@ public class BrowsePlaylistStepHandler : IPlaylistBrowseStepHandler
 
         switch (parsed.Type)
         {
-            case CallbackTypes.Category:
+            case Type.Category:
                 await HandleCategorySelection(parsed.Id, bot, chatId, messageId, ct);
                 break;
-            case CallbackTypes.Playlist:
+            case Type.Playlist:
                 await HandlePlaylistSelection(parsed.Id, bot, chatId, messageId, ct);
                 break;
             default:
