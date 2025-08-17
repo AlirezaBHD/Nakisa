@@ -7,6 +7,24 @@ namespace Nakisa.Application.Bot.Keyboards;
 
 public static class MusicSubmissionKeyboard
 {
+    public static InlineKeyboardMarkup JoinButton(string url)
+    {
+        var keyboard = new InlineKeyboardMarkup(
+            InlineKeyboardButton.WithUrl("عضویت", url)
+        );
+        
+        return keyboard;
+    }
+    
+    public static InlineKeyboardMarkup BackToHomeButton()
+    {
+        var keyboard = new InlineKeyboardMarkup(
+            InlineKeyboardButton.WithCallbackData("لغو", "cancel")
+            );
+        
+        return keyboard;
+    }
+
     public static InlineKeyboardMarkup CategoriesButton(IEnumerable<GetCategoryDto> categories)
     {
         var keyboard = new List<List<InlineKeyboardButton>>();
@@ -54,8 +72,8 @@ public static class MusicSubmissionKeyboard
             keyboard.Add(new List<InlineKeyboardButton>
             {
                 BuildButton($"- {mainPlaylist.Emoji} {mainPlaylist.Name} -",
-                            mainPlaylist.Id,
-                            Types.PlaylistActions.Submit)
+                    mainPlaylist.Id,
+                    Types.PlaylistActions.Submit)
             });
         }
 
