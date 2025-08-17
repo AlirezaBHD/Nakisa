@@ -6,4 +6,9 @@ public static class StringExtensions
     {
         return $"<a href=\"{url}\">{text}</a>";
     }
+    
+    public static string EmojiHandler(this string? emoji)
+    {
+        return string.IsNullOrWhiteSpace(emoji) ? "" : emoji + " ";
+    }
 }
