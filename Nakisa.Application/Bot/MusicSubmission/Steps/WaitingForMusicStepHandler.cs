@@ -1,5 +1,6 @@
 ﻿using Nakisa.Application.Bot.Extensions;
 using Nakisa.Application.Bot.Interfaces;
+using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.DTOs.Playlist;
 using Nakisa.Application.Interfaces;
@@ -31,69 +32,64 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
     public async Task HandleAsync(Update update, SongSubmissionDto data, ITelegramBotClient bot, CancellationToken ct)
     {
         var chatId = update.GetChatId();
-
-        if (update.CallbackQuery?.Data == "home page")
-        {
-            await _botNavigation.SendHomePageAsync(bot, chatId, ct);
-            return;
-        }
         if (update.Message?.Audio is not { } audio)
         {
-            await SendText(bot, chatId, "یه فایل موزیک قابل قبول بفرستید", ct);
+            await SendTextAsync(bot, chatId, "یه فایل موزیک قابل قبول بفرستید", ct);
             return;
         }
 
+        await HandleAudioAsync(bot, chatId, audio, data, ct);
+    }
+    
+    private async Task HandleAudioAsync(ITelegramBotClient bot, long chatId, Audio audio, SongSubmissionDto data, CancellationToken ct)
+    {
         var userIdentifier = await _userService.GenerateCaption(chatId);
-
         var fileId = audio.FileId;
 
         var playlistsInfo = await _playlistService.GetPlaylistsInfo(data.TargetPlaylistId);
 
         await _musicService.AddMusicAsync(audio, chatId, data.TargetPlaylistId);
 
-        await ProcessPlaylists(playlistsInfo);
+        await ForwardMusicToPlaylists(bot, fileId, userIdentifier, playlistsInfo, chatId, ct);
 
-        var declineButton = new InlineKeyboardMarkup([
-            [
-                InlineKeyboardButton.WithCallbackData("لغو", "home page")
-            ]
-        ]);
+        var backToHomeButton = MusicSubmissionKeyboard.BackToHomeButton();
 
-        await SendText(bot, chatId, "بازم میخوای آهنگی بفرستی به این پلیلیست؟\n آهنگتو بفرست", ct, declineButton);
-
-        async Task ProcessPlaylists(IEnumerable<PlaylistsDto> playlists)
+        await SendTextAsync(bot, chatId, "بازم میخوای آهنگی بفرستی به این پلیلیست؟\nآهنگتو بفرست", ct, backToHomeButton);
+    }
+    private async Task ForwardMusicToPlaylists(
+        ITelegramBotClient bot,
+        string fileId,
+        string userIdentifier,
+        IEnumerable<PlaylistsDto> playlists,
+        long chatId,
+        CancellationToken ct)
+    {
+        foreach (var playlist in playlists)
         {
-            foreach (var playlist in playlists)
-            {
-                var messageCaption = GenerateCaption(userIdentifier, playlist.Emoji, playlist.Name,
-                    playlist.ChannelInviteLink);
+            var caption = BuildCaption(userIdentifier, playlist.Emoji, playlist.Name, playlist.ChannelInviteLink);
 
-                var button = new InlineKeyboardMarkup([
-                    [
-                        InlineKeyboardButton.WithUrl("عضویت", playlist.ChannelInviteLink)
-                    ]
-                ]);
+            var joinButton = MusicSubmissionKeyboard.JoinButton(playlist.ChannelInviteLink);
 
-                var childMessage =
-                    await SendAudioToChannel(bot, playlist.TelegramChannelId, fileId, messageCaption, button, ct);
+            var channelMessage = await SendAudioToChannelAsync(bot, playlist.TelegramChannelId, fileId, caption, ct);
 
-                var resultMessage = FormatMessage(playlist, childMessage);
-                await SendText(bot, chatId, resultMessage, ct, button);
-            }
+            var resultMessage = FormatResultMessage(playlist, channelMessage);
+            await SendTextAsync(bot, chatId, resultMessage, ct, joinButton);
         }
     }
-
-    private static string GenerateCaption(string userIdentifier, string? emoji, string name, string inviteLink)
+    
+    private static string BuildCaption(string userIdentifier, string? emoji, string name, string inviteLink)
     {
-        emoji = emoji == null ? "" : emoji + " ";
-
-        var caption = $"{userIdentifier}\n\n<a href=\"{inviteLink}\">- {emoji}{name}</a>";
-
-        return caption;
+        var emojiPart = emoji.EmojiHandler();
+        var linkPart = $"- {emojiPart}{name}".ToTelegramLink(inviteLink);
+        return $"{userIdentifier}\n\n{linkPart}";
     }
 
-    private async Task<Message> SendAudioToChannel(ITelegramBotClient bot, long channelId, string fileId,
-        string caption, InlineKeyboardMarkup button, CancellationToken ct)
+    private static async Task<Message> SendAudioToChannelAsync(
+        ITelegramBotClient bot,
+        long channelId,
+        string fileId,
+        string caption,
+        CancellationToken ct)
     {
         return await bot.SendAudio(
             chatId: channelId,
@@ -102,34 +98,27 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
             parseMode: ParseMode.Html,
             cancellationToken: ct);
     }
-
-    private string FormatMessage(PlaylistsDto info, Message message)
+    
+    
+    private static string FormatResultMessage(PlaylistsDto info, Message message)
     {
-        var emoji = string.IsNullOrWhiteSpace(info.Emoji) ? "" : info.Emoji + " ";
-
-        return
-            $"{emoji}{info.Name}: <a href=\"{message.MessageLink()}\">لینک موزیک</a>";
+        var emojiPart = info.Emoji.EmojiHandler();
+        var linkPart = "لینک موزیک".ToTelegramLink(message.MessageLink()!);
+        return $"{emojiPart}{info.Name}: {linkPart}";
     }
 
-    private async Task SendText(ITelegramBotClient bot, long chatId, string text, CancellationToken ct,
+    private static async Task SendTextAsync(
+        ITelegramBotClient bot,
+        long chatId,
+        string text,
+        CancellationToken ct,
         InlineKeyboardMarkup? button = null)
     {
-        if (button is not null)
-        {
-            await bot.SendMessage(
-                chatId: chatId,
-                text: text,
-                replyMarkup: button,
-                parseMode: ParseMode.Html,
-                cancellationToken: ct);
-        }
-        else
-        {
-            await bot.SendMessage(
-                chatId: chatId,
-                text: text,
-                parseMode: ParseMode.Html,
-                cancellationToken: ct);
-        }
+        await bot.SendMessage(
+            chatId: chatId,
+            text: text,
+            replyMarkup: button,
+            parseMode: ParseMode.Html,
+            cancellationToken: ct);
     }
 }
