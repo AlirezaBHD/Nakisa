@@ -1,6 +1,6 @@
-﻿using Nakisa.Application.Bot.Session;
+﻿using Nakisa.Application.Bot.Core.Session;
 
-namespace Nakisa.Application.Bot.Interfaces;
+namespace Nakisa.Application.Bot.Core.Interfaces;
 
 public interface IUserSessionService
 {
