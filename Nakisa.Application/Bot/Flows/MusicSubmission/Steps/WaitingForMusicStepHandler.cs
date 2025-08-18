@@ -1,5 +1,6 @@
-﻿using Nakisa.Application.Bot.Extensions;
-using Nakisa.Application.Bot.Interfaces;
+﻿using Nakisa.Application.Bot.Core.Enums;
+using Nakisa.Application.Bot.Core.Extensions;
+using Nakisa.Application.Bot.Core.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.DTOs.Playlist;
@@ -9,7 +10,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace Nakisa.Application.Bot.MusicSubmission.Steps;
+namespace Nakisa.Application.Bot.Flows.MusicSubmission.Steps;
 
 public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
 {
@@ -27,7 +28,7 @@ public class WaitingForMusicStepHandler : IMusicSubmissionStepHandler
         _botNavigation = botNavigation;
     }
 
-    public Domain.Enums.MusicSubmissionStep Step => Domain.Enums.MusicSubmissionStep.WaitingForMusic;
+    public MusicSubmissionStep Step => MusicSubmissionStep.WaitingForMusic;
 
     public async Task HandleAsync(Update update, SongSubmissionDto data, ITelegramBotClient bot, CancellationToken ct)
     {
