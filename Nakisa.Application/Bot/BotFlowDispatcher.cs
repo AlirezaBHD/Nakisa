@@ -2,11 +2,10 @@
 using Nakisa.Application.Bot.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.Bot.Session;
-using Nakisa.Application.Interfaces;
 using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
+using Type = Nakisa.Application.Bot.Constants.CallbackTypes;
 
 namespace Nakisa.Application.Bot;
 
@@ -81,21 +80,28 @@ public class BotFlowDispatcher : IBotFlowDispatcher
     {
         switch (callbackData)
         {
-            case "Register":
-                await StartFlowAsync(bot, update, session, UserFlow.Registering, _registerHandler.StartAsync, ct);
+            case Type.Register:
+                await FlowStarterAsync(UserFlow.Registering);
                 break;
 
-            case "SubmitSong":
-                await StartFlowAsync(bot, update, session, UserFlow.SubmittingSong, _musicHandler.StartAsync, ct);
+            case Type.SubmitSong:
+                await FlowStarterAsync(UserFlow.SubmittingSong);
                 break;
 
-            case "ViewPlaylists":
-                await StartFlowAsync(bot, update, session, UserFlow.BrowsingPlaylists, _playlistHandler.StartAsync, ct);
+            case Type.ViewPlaylists:
+                await FlowStarterAsync(UserFlow.BrowsingPlaylists);
                 break;
 
             default:
                 await SendInvalidCommandMessage(bot, update.GetChatId(), ct);
                 break;
+        }
+
+        return;
+
+        async Task FlowStarterAsync( UserFlow flow)
+        {
+            await StartFlowAsync(bot, update, session, flow, _musicHandler.StartAsync, ct);
         }
     }
 
