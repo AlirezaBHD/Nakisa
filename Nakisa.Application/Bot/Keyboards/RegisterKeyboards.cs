@@ -1,5 +1,5 @@
 using Telegram.Bot.Types.ReplyMarkups;
-using Type = Nakisa.Application.Bot.Register.Constants.CallbackTypes;
+using Type = Nakisa.Application.Bot.Core.Constants.RegisterCallbackTypes;
 
 namespace Nakisa.Application.Bot.Keyboards;
 
