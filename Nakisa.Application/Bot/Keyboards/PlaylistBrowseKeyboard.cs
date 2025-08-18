@@ -1,6 +1,7 @@
 ﻿using Nakisa.Application.DTOs.Category;
 using Nakisa.Application.DTOs.Playlist;
 using Telegram.Bot.Types.ReplyMarkups;
+using Type = Nakisa.Application.Bot.PlaylistBrowse.Constants.CallbackTypes;
 
 namespace Nakisa.Application.Bot.Keyboards;
 
@@ -14,7 +15,7 @@ public static class PlaylistBrowseKeyboard
         {
             keyboard.Add(new List<InlineKeyboardButton>
             {
-                InlineKeyboardButton.WithCallbackData($"-- {category.Name} --", $"category:{category.Id}")
+                InlineKeyboardButton.WithCallbackData($"-- {category.Name} --", $"{Type.Category}:{category.Id}")
             });
 
             var row = new List<InlineKeyboardButton>();
@@ -23,7 +24,7 @@ public static class PlaylistBrowseKeyboard
             foreach (var playlist in category.Playlists)
             {
                 row.Add(InlineKeyboardButton.WithCallbackData($"{playlist.Emoji} {playlist.Name}",
-                    $"playlist:{playlist.Id}"));
+                    $"{Type.Playlist}:{playlist.Id}"));
                 count++;
 
                 if (count % 2 == 0)
@@ -52,7 +53,7 @@ public static class PlaylistBrowseKeyboard
         foreach (var playlist in playlists)
         {
             row.Add(InlineKeyboardButton.WithCallbackData($"{playlist.Emoji} {playlist.Name}",
-                $"playlist:{playlist.Id}:brows"));
+                $"{Type.Playlist}:{playlist.Id}"));
             count++;
 
             if (count % 3 == 0)
@@ -114,12 +115,11 @@ public static class PlaylistBrowseKeyboard
         var backRow = new List<InlineKeyboardButton>();
         backRow.Add(InlineKeyboardButton.WithCallbackData(
             "بازگشت",
-            "back"
+            Type.Back
         ));
         
         keyboard.Add(backRow);
         return new InlineKeyboardMarkup(keyboard);
         
     }
-
 }
