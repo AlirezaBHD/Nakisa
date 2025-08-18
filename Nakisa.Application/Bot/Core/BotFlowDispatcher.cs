@@ -1,13 +1,13 @@
-﻿using Nakisa.Application.Bot.Extensions;
-using Nakisa.Application.Bot.Interfaces;
+﻿using Nakisa.Application.Bot.Core.Enums;
+using Nakisa.Application.Bot.Core.Extensions;
+using Nakisa.Application.Bot.Core.Interfaces;
+using Nakisa.Application.Bot.Core.Session;
 using Nakisa.Application.Bot.Keyboards;
-using Nakisa.Application.Bot.Session;
-using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Type = Nakisa.Application.Bot.Constants.CallbackTypes;
+using Type = Nakisa.Application.Bot.Core.Constants.MainPageCallbackTypes;
 
-namespace Nakisa.Application.Bot;
+namespace Nakisa.Application.Bot.Core;
 
 public class BotFlowDispatcher : IBotFlowDispatcher
 {
@@ -128,6 +128,6 @@ public class BotFlowDispatcher : IBotFlowDispatcher
     private async Task SendInvalidCommandMessage(ITelegramBotClient bot, long chatId, CancellationToken ct)
     {
         await bot.SendMessage(chatId, "دستور نامعتبره. لطفاً از منو استفاده کن.",
-            replyMarkup: MainKeyboard.NewUserMainMenuButton(), cancellationToken: ct);
+            replyMarkup: MainpageKeyboard.NewUserMainMenuButton(), cancellationToken: ct);
     }
 }
