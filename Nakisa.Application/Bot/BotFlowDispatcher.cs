@@ -89,7 +89,7 @@ public class BotFlowDispatcher : IBotFlowDispatcher
                 break;
 
             case Type.ViewPlaylists:
-                await StartFlowAsync(bot, update, session, UserFlow.BrowsingPlaylists, _registerHandler.StartAsync, ct);
+                await StartFlowAsync(bot, update, session, UserFlow.BrowsingPlaylists, _playlistHandler.StartAsync, ct);
                 break;
 
             default:
