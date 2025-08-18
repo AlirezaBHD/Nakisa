@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Nakisa.Application.Bot.Core.Extensions;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.DTOs.User;
 using Nakisa.Application.Interfaces;
@@ -95,17 +96,17 @@ public class UserService : Service<User>, IUserService
                 identifier = "ناشناس";
                 break;
             case CaptionIdentifierType.TelegramNameAndUsername:
-                identifier = $"<a href=\"https://t.me/{user.Username}\">{user.FirstName!}</a>";
+                identifier = user.FirstName!.ToTelegramLink($"https://t.me/{user.Username}");
                 break;
             case CaptionIdentifierType.TelegramNameAndChannelName:
-                identifier = $"<a href=\"{user.PersonChannelLink}\">{user.FirstName!}</a>";
+                identifier = user.FirstName!.ToTelegramLink(user.PersonChannelLink!);
                 break;
 
             case CaptionIdentifierType.NicknameAndUsername:
-                identifier = $"({user.Nickname!})[@{user.Username}]";
+                identifier = user.Nickname!.ToTelegramLink($"https://t.me/{user.Username}");
                 break;
             case CaptionIdentifierType.NicknameAndChannelName:
-                identifier = $"<a href=\"{user.PersonChannelLink}\">{user.Nickname!}</a>";
+                identifier = user.Nickname!.ToTelegramLink(user.PersonChannelLink!);
                 break;
         }
 
@@ -121,7 +122,9 @@ public class UserService : Service<User>, IUserService
 
             case ChannelIncludingType.ChannelNameWithLink:
                 var channelName = await _client.GetChannelInfoFromLinkAsync(user.PersonChannelLink!);
-                includedChannel = $"<a href=\"{user.PersonChannelLink}\">{channelName}</a>";
+                includedChannel = channelName!.ToTelegramLink(user.PersonChannelLink!);
+
+                
                 break;
         }
 
