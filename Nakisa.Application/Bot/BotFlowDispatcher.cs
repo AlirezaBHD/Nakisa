@@ -81,27 +81,20 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         switch (callbackData)
         {
             case Type.Register:
-                await FlowStarterAsync(UserFlow.Registering);
+                await StartFlowAsync(bot, update, session, UserFlow.Registering, _registerHandler.StartAsync, ct);
                 break;
 
             case Type.SubmitSong:
-                await FlowStarterAsync(UserFlow.SubmittingSong);
+                await StartFlowAsync(bot, update, session, UserFlow.SubmittingSong, _musicHandler.StartAsync, ct);
                 break;
 
             case Type.ViewPlaylists:
-                await FlowStarterAsync(UserFlow.BrowsingPlaylists);
+                await StartFlowAsync(bot, update, session, UserFlow.BrowsingPlaylists, _registerHandler.StartAsync, ct);
                 break;
 
             default:
                 await SendInvalidCommandMessage(bot, update.GetChatId(), ct);
                 break;
-        }
-
-        return;
-
-        async Task FlowStarterAsync( UserFlow flow)
-        {
-            await StartFlowAsync(bot, update, session, flow, _musicHandler.StartAsync, ct);
         }
     }
 
