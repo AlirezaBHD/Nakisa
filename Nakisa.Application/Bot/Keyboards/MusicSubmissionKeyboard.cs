@@ -1,7 +1,7 @@
-﻿using Types = Nakisa.Application.Bot.MusicSubmission.Constants.CallbackTypes;
-using Nakisa.Application.DTOs.Category;
+﻿using Nakisa.Application.DTOs.Category;
 using Nakisa.Application.DTOs.Playlist;
 using Telegram.Bot.Types.ReplyMarkups;
+using Type = Nakisa.Application.Bot.Core.Constants.MusicSubmissionCallbackTypes;
 
 namespace Nakisa.Application.Bot.Keyboards;
 
@@ -35,12 +35,12 @@ public static class MusicSubmissionKeyboard
             {
                 InlineKeyboardButton.WithCallbackData(
                     $"-- {category.Name} --",
-                    $"{Types.Category}:{category.Id}")
+                    $"{Type.Category}:{category.Id}")
             });
 
             var playlistRows = BuildKeyboard(
                 category.Playlists,
-                p => BuildButton($"{p.Emoji} {p.Name}", p.Id, Types.PlaylistActions.Browse),
+                p => BuildButton($"{p.Emoji} {p.Name}", p.Id, Type.PlaylistActions.Browse),
                 rowSize: 2
             );
 
@@ -54,7 +54,7 @@ public static class MusicSubmissionKeyboard
     {
         var keyboard = BuildKeyboard(
             playlists,
-            p => BuildButton($"{p.Emoji} {p.Name}", p.Id, Types.PlaylistActions.Browse),
+            p => BuildButton($"{p.Emoji} {p.Name}", p.Id, Type.PlaylistActions.Browse),
             rowSize: 3
         );
 
@@ -73,13 +73,13 @@ public static class MusicSubmissionKeyboard
             {
                 BuildButton($"- {mainPlaylist.Emoji} {mainPlaylist.Name} -",
                     mainPlaylist.Id,
-                    Types.PlaylistActions.Submit)
+                    Type.PlaylistActions.Submit)
             });
         }
 
         var otherRows = BuildKeyboard(
             playlists,
-            p => BuildButton(p.Name, p.Id, Types.PlaylistActions.Submit),
+            p => BuildButton(p.Name, p.Id, Type.PlaylistActions.Submit),
             rowSize: 2
         );
 
@@ -92,7 +92,7 @@ public static class MusicSubmissionKeyboard
     {
         return InlineKeyboardButton.WithCallbackData(
             text,
-            $"{Types.Playlist}:{id}:{action}"
+            $"{Type.Playlist}:{id}:{action}"
         );
     }
 
