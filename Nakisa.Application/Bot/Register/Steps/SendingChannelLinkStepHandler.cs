@@ -31,13 +31,14 @@ public class SendingChannelLinkStepHandler : IRegisterStepHandler
         {
             data.PersonChannelLink = cleanLink;
                 
-            if (data.CaptionIdentifier == CaptionIdentifierType.Nickname)
+            switch (data.CaptionIdentifier)
             {
-                data.CaptionIdentifier = CaptionIdentifierType.NicknameAndChannelName;
-            }
-            else if (data.CaptionIdentifier == CaptionIdentifierType.TelegramName)
-            {
-                data.CaptionIdentifier = CaptionIdentifierType.TelegramNameAndChannelName;
+                case CaptionIdentifierType.Nickname:
+                    data.CaptionIdentifier = CaptionIdentifierType.NicknameAndChannelName;
+                    break;
+                case CaptionIdentifierType.TelegramName:
+                    data.CaptionIdentifier = CaptionIdentifierType.TelegramNameAndChannelName;
+                    break;
             }
 
             data.Step = RegisterStep.ChannelPrefix;
