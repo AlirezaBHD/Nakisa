@@ -1,7 +1,7 @@
 ﻿using Nakisa.Application.DTOs.Category;
 using Nakisa.Application.DTOs.Playlist;
 using Telegram.Bot.Types.ReplyMarkups;
-using Type = Nakisa.Application.Bot.PlaylistBrowse.Constants.CallbackTypes;
+using Type = Nakisa.Application.Bot.Core.Constants.PlaylistBrowseCallbackTypes;
 
 namespace Nakisa.Application.Bot.Keyboards;
 
