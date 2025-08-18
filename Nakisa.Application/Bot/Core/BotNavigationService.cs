@@ -1,9 +1,9 @@
-using Nakisa.Application.Bot.Interfaces;
+using Nakisa.Application.Bot.Core.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.Interfaces;
 using Telegram.Bot;
 
-namespace Nakisa.Application.Bot;
+namespace Nakisa.Application.Bot.Core;
 
 public class BotNavigationService : IBotNavigationService
 {
@@ -32,8 +32,8 @@ public class BotNavigationService : IBotNavigationService
         _session.Clear(chatId);
 
         var keyboard = isUserExist
-            ? MainKeyboard.OldUserMainMenuButton()
-            : MainKeyboard.NewUserMainMenuButton();
+            ? MainpageKeyboard.OldUserMainMenuButton()
+            : MainpageKeyboard.NewUserMainMenuButton();
         
         await bot.SendAnimation(
             chatId: chatId,
