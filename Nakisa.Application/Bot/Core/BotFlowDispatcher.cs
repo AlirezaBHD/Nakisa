@@ -3,6 +3,7 @@ using Nakisa.Application.Bot.Core.Extensions;
 using Nakisa.Application.Bot.Core.Interfaces;
 using Nakisa.Application.Bot.Core.Session;
 using Nakisa.Application.Bot.Keyboards;
+using Nakisa.Application.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Type = Nakisa.Application.Bot.Core.Constants.MainPageCallbackTypes;
@@ -41,6 +42,11 @@ public class BotFlowDispatcher : IBotFlowDispatcher
             await _navigation.SendHomePageAsync(bot, chatId, ct);
             return;
         }
+        else if (ShouldHeadToHelpPage(update))
+        {
+            await _navigation.SendHelpPageAsync(bot, chatId, ct);
+            return;
+        }
         else if (session.Flow == UserFlow.None)
         {
             var callbackData = update.CallbackQuery?.Data;
@@ -56,6 +62,11 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         }
 
         await HandleFlowAsync(bot, update, session, ct);
+    }
+
+    private bool ShouldHeadToHelpPage(Update update)
+    {
+        return update.Message?.Text == "/help";
     }
 
     private bool ShouldHeadToMainMenu(Update update)
@@ -128,6 +139,6 @@ public class BotFlowDispatcher : IBotFlowDispatcher
     private async Task SendInvalidCommandMessage(ITelegramBotClient bot, long chatId, CancellationToken ct)
     {
         await bot.SendMessage(chatId, "دستور نامعتبره. لطفاً از منو استفاده کن.",
-            replyMarkup: MainpageKeyboard.NewUserMainMenuButton(), cancellationToken: ct);
+            replyMarkup: MainPageKeyboard.NewUserMainMenuButton(), cancellationToken: ct);
     }
 }
