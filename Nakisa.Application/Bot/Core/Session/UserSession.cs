@@ -1,6 +1,6 @@
-﻿using Nakisa.Domain.Enums;
+﻿using Nakisa.Application.Bot.Core.Enums;
 
-namespace Nakisa.Application.Bot.Session;
+namespace Nakisa.Application.Bot.Core.Session;
 
 public class UserSession
 {

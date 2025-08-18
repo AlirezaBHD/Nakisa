@@ -1,4 +1,4 @@
-﻿using Nakisa.Domain.Enums;
+﻿using Nakisa.Application.Bot.Core.Enums;
 
 namespace Nakisa.Application.DTOs;
 

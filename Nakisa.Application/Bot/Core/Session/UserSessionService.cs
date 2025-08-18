@@ -1,7 +1,7 @@
-﻿using Nakisa.Application.Bot.Interfaces;
-using Nakisa.Domain.Enums;
+﻿using Nakisa.Application.Bot.Core.Enums;
+using Nakisa.Application.Bot.Core.Interfaces;
 
-namespace Nakisa.Application.Bot.Session;
+namespace Nakisa.Application.Bot.Core.Session;
 
 public class UserSessionService : IUserSessionService
 {

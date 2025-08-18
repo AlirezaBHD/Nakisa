@@ -1,4 +1,4 @@
-namespace Nakisa.Application.Bot.Extensions;
+namespace Nakisa.Application.Bot.Core.Extensions;
 
 public static class StringExtensions
 {
