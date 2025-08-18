@@ -1,15 +1,15 @@
-﻿using Nakisa.Application.Bot.Extensions;
-using Nakisa.Application.Bot.Interfaces;
+﻿using Nakisa.Application.Bot.Core.Enums;
+using Nakisa.Application.Bot.Core.Extensions;
+using Nakisa.Application.Bot.Core.Interfaces;
+using Nakisa.Application.Bot.Flows.PlaylistBrowse.Utils;
 using Nakisa.Application.Bot.Keyboards;
-using Nakisa.Application.Bot.PlaylistBrowse.Utils;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.Interfaces;
-using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Type = Nakisa.Application.Bot.PlaylistBrowse.Constants.CallbackTypes;
+using Type = Nakisa.Application.Bot.Core.Constants.PlaylistBrowseCallbackTypes;
 
-namespace Nakisa.Application.Bot.PlaylistBrowse.Steps;
+namespace Nakisa.Application.Bot.Flows.PlaylistBrowse.Steps;
 
 public class BrowsePlaylistStepHandler : IPlaylistBrowseStepHandler
 {
