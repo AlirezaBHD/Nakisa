@@ -1,13 +1,13 @@
-using Nakisa.Application.Bot.Extensions;
-using Nakisa.Application.Bot.Interfaces;
+using Nakisa.Application.Bot.Core.Enums;
+using Nakisa.Application.Bot.Core.Extensions;
+using Nakisa.Application.Bot.Core.Interfaces;
+using Nakisa.Application.Bot.Core.Session;
 using Nakisa.Application.Bot.Keyboards;
-using Nakisa.Application.Bot.Session;
 using Nakisa.Application.DTOs;
-using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Nakisa.Application.Bot.Register;
+namespace Nakisa.Application.Bot.Flows.Register;
 
 public class RegisterFlowHandler : IRegisterFlowHandler
 {
