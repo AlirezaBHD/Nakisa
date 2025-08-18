@@ -1,4 +1,4 @@
-﻿namespace Nakisa.Domain.Enums;
+﻿namespace Nakisa.Application.Bot.Core.Enums;
 
 public enum MusicSubmissionStep
 {

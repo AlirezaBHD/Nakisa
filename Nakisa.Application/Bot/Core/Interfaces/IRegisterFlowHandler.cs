@@ -1,10 +1,10 @@
-﻿using Nakisa.Application.Bot.Session;
+﻿using Nakisa.Application.Bot.Core.Session;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Nakisa.Application.Bot.Interfaces;
+namespace Nakisa.Application.Bot.Core.Interfaces;
 
-public interface IMusicSubmitFlowHandler
+public interface IRegisterFlowHandler
 {
     Task StartAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct);
     Task HandleAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct);

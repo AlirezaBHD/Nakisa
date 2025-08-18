@@ -1,8 +1,8 @@
-﻿using Nakisa.Application.Bot.Session;
+﻿using Nakisa.Application.Bot.Core.Session;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Nakisa.Application.Bot.Interfaces;
+namespace Nakisa.Application.Bot.Core.Interfaces;
 
 public interface IPlaylistBrowseFlowHandler
 {

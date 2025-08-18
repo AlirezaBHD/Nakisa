@@ -1,6 +1,6 @@
 using Telegram.Bot;
 
-namespace Nakisa.Application.Bot.Interfaces;
+namespace Nakisa.Application.Bot.Core.Interfaces;
 
 public interface IBotNavigationService
 {

@@ -1,9 +1,9 @@
+using Nakisa.Application.Bot.Core.Enums;
 using Nakisa.Application.DTOs;
-using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Nakisa.Application.Bot.Interfaces;
+namespace Nakisa.Application.Bot.Core.Interfaces;
 
 public interface IRegisterStepHandler
 {
