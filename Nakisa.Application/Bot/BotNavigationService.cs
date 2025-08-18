@@ -34,11 +34,15 @@ public class BotNavigationService : IBotNavigationService
         var keyboard = isUserExist
             ? MainKeyboard.OldUserMainMenuButton()
             : MainKeyboard.NewUserMainMenuButton();
-
+        
         await bot.SendAnimation(
             chatId: chatId,
-            caption: welcomeMessage,
             animation: _animationId,
+            cancellationToken: ct);
+
+        await bot.SendMessage(
+            chatId: chatId,
+            text: welcomeMessage,
             replyMarkup: keyboard,
             cancellationToken: ct);
     }
