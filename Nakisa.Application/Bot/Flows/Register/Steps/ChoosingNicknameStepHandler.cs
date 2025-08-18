@@ -1,13 +1,13 @@
-using Nakisa.Application.Bot.Extensions;
-using Nakisa.Application.Bot.Interfaces;
+using Nakisa.Application.Bot.Core.Enums;
+using Nakisa.Application.Bot.Core.Extensions;
+using Nakisa.Application.Bot.Core.Interfaces;
 using Nakisa.Application.Bot.Keyboards;
 using Nakisa.Application.DTOs;
 using Nakisa.Application.Interfaces;
-using Nakisa.Domain.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Nakisa.Application.Bot.Register.Steps;
+namespace Nakisa.Application.Bot.Flows.Register.Steps;
 
 public class ChoosingNicknameStepHandler : IRegisterStepHandler
 {
