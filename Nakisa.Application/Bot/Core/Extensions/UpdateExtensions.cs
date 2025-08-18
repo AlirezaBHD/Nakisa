@@ -1,7 +1,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace Nakisa.Application.Bot.Extensions;
+namespace Nakisa.Application.Bot.Core.Extensions;
 
 public static class UpdateExtensions
 {
