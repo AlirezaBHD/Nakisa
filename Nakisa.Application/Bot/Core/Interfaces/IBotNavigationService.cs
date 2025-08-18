@@ -8,4 +8,9 @@ public interface IBotNavigationService
         ITelegramBotClient bot,
         long chatId,
         CancellationToken ct);
+
+    Task SendHelpPageAsync(
+        ITelegramBotClient bot,
+        long chatId,
+        CancellationToken ct);
 }
