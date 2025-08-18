@@ -9,11 +9,13 @@ public class BotNavigationService : IBotNavigationService
 {
     private readonly IUserSessionService _session;
     private readonly IUserService _userService;
+    private readonly string _animationId;
 
     public BotNavigationService(IUserSessionService session, IUserService userService)
     {
         _session = session;
         _userService = userService;
+        _animationId = "CgACAgQAAxkBAAIJA2ii5LtNL3K8LmZlVXSjtmrSEnFrAAJ8HAACrdMZUY8MXCkceLdVNgQ";
     }
 
     public async Task SendHomePageAsync(
@@ -32,7 +34,12 @@ public class BotNavigationService : IBotNavigationService
         var keyboard = isUserExist
             ? MainKeyboard.OldUserMainMenuButton()
             : MainKeyboard.NewUserMainMenuButton();
-        
-        await bot.SendMessage(chatId, welcomeMessage, replyMarkup: keyboard, cancellationToken: ct);
+
+        await bot.SendAnimation(
+            chatId: chatId,
+            caption: welcomeMessage,
+            animation: _animationId,
+            replyMarkup: keyboard,
+            cancellationToken: ct);
     }
 }
