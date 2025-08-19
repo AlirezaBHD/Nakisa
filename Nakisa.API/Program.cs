@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using Nakisa.Application.Mapping;
 using Nakisa.Infrastructure;
+using Nakisa.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,14 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile).Assembly);
 services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
 
 if (app.Environment.IsDevelopment())
 {
