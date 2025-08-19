@@ -46,4 +46,14 @@ public static class UpdateExtensions
     {
         return update.CallbackQuery?.Data ?? string.Empty;
     }
+    
+    public static bool IsStartOrCancelCommand(this Update update)
+    {
+        var msg = update.Message?.Text?.Trim().ToLower();
+        var cb = update.GetCallbackData()?.ToLower();
+        return msg is "/start" or "/cancel" || cb is "cancel" or "home_page";
+    }
+
+    public static bool IsHelpCommand(this Update update)
+        => update.Message?.Text == "/help";
 }
