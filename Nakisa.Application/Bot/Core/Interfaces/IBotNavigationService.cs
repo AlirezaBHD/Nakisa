@@ -13,4 +13,8 @@ public interface IBotNavigationService
         ITelegramBotClient bot,
         long chatId,
         CancellationToken ct);
+
+    Task SendInvalidCommandMessage(ITelegramBotClient bot,
+        long chatId,
+        CancellationToken ct);
 }
