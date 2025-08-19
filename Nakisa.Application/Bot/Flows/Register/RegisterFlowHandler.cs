@@ -9,8 +9,10 @@ using Telegram.Bot.Types;
 
 namespace Nakisa.Application.Bot.Flows.Register;
 
-public class RegisterFlowHandler : IRegisterFlowHandler
+public class RegisterFlowHandler : IFlowHandler
 {
+    public UserFlow Flow => UserFlow.Registering;
+    
     private readonly Dictionary<RegisterStep, IRegisterStepHandler> _handlers;
     private readonly IUserSessionService _sessionService;
 
