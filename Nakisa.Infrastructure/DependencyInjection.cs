@@ -29,13 +29,13 @@ public static class DependencyInjection
         
         services.AddScoped<IBotFlowDispatcher, BotFlowDispatcher>();
         
-        services.AddScoped<IPlaylistBrowseFlowHandler, PlaylistBrowseFlowHandler>();
+        services.AddScoped<IFlowHandler, PlaylistBrowseFlowHandler>();
         
-        services.AddScoped<IMusicSubmitFlowHandler,MusicSubmissionFlowHandler>();
+        services.AddScoped<IFlowHandler,MusicSubmissionFlowHandler>();
+        
+        services.AddScoped<IFlowHandler, RegisterFlowHandler>();
         
         services.AddSingleton<IUserSessionService, UserSessionService>();
-        
-        services.AddScoped<IRegisterFlowHandler, RegisterFlowHandler>();
         
         services.AddScoped<IBotNavigationService, BotNavigationService>();
         
