@@ -2,6 +2,11 @@ using Nakisa.Application.Mapping;
 using Nakisa.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
 var services = builder.Services;
 
 services.AddControllers();
