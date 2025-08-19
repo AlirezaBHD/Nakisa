@@ -10,8 +10,10 @@ using Telegram.Bot.Types;
 
 namespace Nakisa.Application.Bot.Flows.PlaylistBrowse;
 
-public class PlaylistBrowseFlowHandler : IPlaylistBrowseFlowHandler
+public class PlaylistBrowseFlowHandler : IFlowHandler
 {
+    public UserFlow Flow => UserFlow.BrowsingPlaylists;
+
     private readonly Dictionary<PlaylistBrowseStep, IPlaylistBrowseStepHandler> _handlers;
     private readonly IUserSessionService _sessionService;
     private readonly ICategoryService _categoryService;
@@ -26,7 +28,7 @@ public class PlaylistBrowseFlowHandler : IPlaylistBrowseFlowHandler
     public async Task StartAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct)
     {
         session.Flow = UserFlow.BrowsingPlaylists;
-        session.FlowData = new PlaylistBrowseDto() { Step = PlaylistBrowseStep.BrowsePlaylist };
+        session.FlowData = new PlaylistBrowseDto { Step = PlaylistBrowseStep.BrowsePlaylist };
         _sessionService.Update(session);
         
         var chatId = update.GetChatId();
