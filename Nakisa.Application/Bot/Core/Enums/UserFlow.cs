@@ -4,6 +4,6 @@ public enum UserFlow
 {
     None,
     Registering,
-    SubmittingSong,
+    MusicSubmission,
     BrowsingPlaylists
 }
