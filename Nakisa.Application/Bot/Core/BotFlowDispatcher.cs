@@ -2,8 +2,6 @@
 using Nakisa.Application.Bot.Core.Extensions;
 using Nakisa.Application.Bot.Core.Interfaces;
 using Nakisa.Application.Bot.Core.Session;
-using Nakisa.Application.Bot.Keyboards;
-using Nakisa.Application.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Type = Nakisa.Application.Bot.Core.Constants.MainPageCallbackTypes;
@@ -13,22 +11,17 @@ namespace Nakisa.Application.Bot.Core;
 public class BotFlowDispatcher : IBotFlowDispatcher
 {
     private readonly IUserSessionService _sessionService;
-    private readonly IRegisterFlowHandler _registerHandler;
-    private readonly IMusicSubmitFlowHandler _musicHandler;
-    private readonly IPlaylistBrowseFlowHandler _playlistHandler;
+    private readonly Dictionary<UserFlow, IFlowHandler> _handlers;
     private readonly IBotNavigationService _navigation;
 
     public BotFlowDispatcher(
         IUserSessionService sessionService,
-        IRegisterFlowHandler registerHandler,
-        IMusicSubmitFlowHandler musicHandler,
-        IPlaylistBrowseFlowHandler playlistHandler, IBotNavigationService navigation)
+        IBotNavigationService navigation,
+        IEnumerable<IFlowHandler> handlers)
     {
         _sessionService = sessionService;
-        _registerHandler = registerHandler;
-        _musicHandler = musicHandler;
-        _playlistHandler = playlistHandler;
         _navigation = navigation;
+        _handlers = handlers.ToDictionary(h => h.Flow, h => h);
     }
 
     public async Task DispatchAsync(ITelegramBotClient bot, Update update, CancellationToken ct)
@@ -36,24 +29,26 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         var chatId = update.GetChatId();
         var session = _sessionService.GetOrCreate(chatId);
 
-        if (ShouldHeadToMainMenu(update))
+        if (update.IsStartOrCancelCommand())
         {
             _sessionService.Clear(chatId);
             await _navigation.SendHomePageAsync(bot, chatId, ct);
             return;
         }
-        else if (ShouldHeadToHelpPage(update))
+        
+        if (update.IsHelpCommand())
         {
             await _navigation.SendHelpPageAsync(bot, chatId, ct);
             return;
         }
-        else if (session.Flow == UserFlow.None)
+        
+        if (session.Flow == UserFlow.None)
         {
             var callbackData = update.CallbackQuery?.Data;
 
             if (string.IsNullOrEmpty(callbackData))
             {
-                await SendInvalidCommandMessage(bot, chatId, ct);
+                await _navigation.SendInvalidCommandMessage(bot, chatId, ct);
                 return;
             }
 
@@ -64,81 +59,53 @@ public class BotFlowDispatcher : IBotFlowDispatcher
         await HandleFlowAsync(bot, update, session, ct);
     }
 
-    private bool ShouldHeadToHelpPage(Update update)
-    {
-        return update.Message?.Text == "/help";
-    }
-
-    private bool ShouldHeadToMainMenu(Update update)
-    {
-        var message = update.Message?.Text?.Trim().ToLower();
-        var callbackData = update.GetCallbackData().ToLower();
-        if (message == "/start" || message == "/cancel")
-        {
-            return true;
-        }
-
-        if (callbackData == "cancel" || callbackData == "home_page")
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     private async Task HandleCallbackCommandAsync(ITelegramBotClient bot, Update update, UserSession session,
         string callbackData, CancellationToken ct)
     {
-        switch (callbackData)
+        var flow = callbackData switch
         {
-            case Type.Register:
-                await StartFlowAsync(bot, update, session, UserFlow.Registering, _registerHandler.StartAsync, ct);
-                break;
+            Type.Register     => UserFlow.Registering,
+            Type.SubmitSong   => UserFlow.MusicSubmission,
+            Type.ViewPlaylists => UserFlow.BrowsingPlaylists,
+            _ => UserFlow.None
+        };
 
-            case Type.SubmitSong:
-                await StartFlowAsync(bot, update, session, UserFlow.SubmittingSong, _musicHandler.StartAsync, ct);
-                break;
-
-            case Type.ViewPlaylists:
-                await StartFlowAsync(bot, update, session, UserFlow.BrowsingPlaylists, _playlistHandler.StartAsync, ct);
-                break;
-
-            default:
-                await SendInvalidCommandMessage(bot, update.GetChatId(), ct);
-                break;
+        if (flow == UserFlow.None)
+        {
+            await _navigation.SendInvalidCommandMessage(bot, update.GetChatId(), ct);
+        }
+        else
+        {
+            await StartFlowAsync(bot, update, session, flow, ct);
         }
     }
 
     private async Task StartFlowAsync(ITelegramBotClient bot, Update update, UserSession session, UserFlow flow,
-        Func<ITelegramBotClient, Update, UserSession, CancellationToken, Task> startHandler, CancellationToken ct)
+        CancellationToken ct)
     {
         session.Flow = flow;
         session.FlowData = null;
         _sessionService.Update(session);
-        await startHandler(bot, update, session, ct);
+
+        if (_handlers.TryGetValue(flow, out var handler))
+        {
+            await handler.StartAsync(bot, update, session, ct);
+        }
+        else
+        {
+            await _navigation.SendInvalidCommandMessage(bot, update.GetChatId(), ct);
+        }
     }
 
     private async Task HandleFlowAsync(ITelegramBotClient bot, Update update, UserSession session, CancellationToken ct)
     {
-        switch (session.Flow)
+        if (_handlers.TryGetValue(session.Flow, out var handler))
         {
-            case UserFlow.Registering:
-                await _registerHandler.HandleAsync(bot, update, session, ct);
-                break;
-
-            case UserFlow.SubmittingSong:
-                await _musicHandler.HandleAsync(bot, update, session, ct);
-                break;
-
-            case UserFlow.BrowsingPlaylists:
-                await _playlistHandler.HandleAsync(bot, update, session, ct);
-                break;
+            await handler.HandleAsync(bot, update, session, ct);
         }
-    }
-
-    private async Task SendInvalidCommandMessage(ITelegramBotClient bot, long chatId, CancellationToken ct)
-    {
-        await bot.SendMessage(chatId, "دستور نامعتبره. لطفاً از منو استفاده کن.",
-            replyMarkup: MainPageKeyboard.NewUserMainMenuButton(), cancellationToken: ct);
+        else
+        {
+            await _navigation.SendInvalidCommandMessage(bot, update.GetChatId(), ct);
+        }
     }
 }
