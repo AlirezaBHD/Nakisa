@@ -39,4 +39,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/health", () => Results.Ok("I'm alive"));
+
 app.Run();
