@@ -28,6 +28,16 @@ public class BotService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var commands = new[]
+        {
+            new BotCommand { Command = "start", Description = "شروع" },
+            new BotCommand { Command = "cancel", Description = "لغو عملیات" },
+            new BotCommand { Command = "help", Description = "راهنما 📖" }
+        };
+
+        await _bot.SetMyCommands(commands, cancellationToken: stoppingToken);
+        
+        
         _bot.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
