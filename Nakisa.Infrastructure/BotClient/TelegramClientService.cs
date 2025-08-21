@@ -21,14 +21,15 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
         "api_id" => _options.ApiId.ToString(),
         "api_hash" => _options.ApiHash,
         "phone_number" => _options.PhoneNumber,
+        "session_pathname" => _options.SessionPath,
         _ => null
     };
-    
+
     public async Task<string?> GetChannelInfoFromLinkAsync(string link)
     {
         if (string.IsNullOrWhiteSpace(link))
             return null;
-        
+
         await _client.LoginUserIfNeeded();
 
         if (link.Contains("+")) //private link
@@ -40,7 +41,7 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
             {
                 case ChatInvite chatInvite:
                     return chatInvite.title;
-                
+
                 case ChatInviteAlready chatAlready:
                     return chatAlready.chat.Title;
             }
@@ -55,6 +56,7 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
                 return channel.Title;
             }
         }
+
         return null;
     }
 
@@ -75,7 +77,7 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
             megagroup: true,
             title: baseName + " chat",
             about: baseName + " playlist chat\n@NakisaMusicBot"
-            );
+        );
 
         var group = groupResult.Chats.First().Value as Channel;
 
@@ -83,12 +85,12 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
 
         var channelInvite = await _client.Messages_ExportChatInvite(channel, legacy_revoke_permanent: true);
         var groupInvite = await _client.Messages_ExportChatInvite(group, legacy_revoke_permanent: true);
-        
-        
+
+
         return (channel.id, group.id,
             (channelInvite as ChatInviteExported)?.link ?? "",
             (groupInvite as ChatInviteExported)?.link ?? "");
     }
-    
+
     public ValueTask DisposeAsync() => _client.DisposeAsync();
 }
