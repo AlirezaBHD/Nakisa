@@ -17,8 +17,8 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
 
         _sessionDestination = "/tmp/WTelegram.session";
 
-        if (File.Exists(_options.SessionPath) && !File.Exists(_sessionDestination))
-            File.Copy(_options.SessionPath, _sessionDestination);
+        // if (File.Exists(_options.SessionPath) && !File.Exists(_sessionDestination))
+        //     File.Copy(_options.SessionPath, _sessionDestination);
 
         _client = new WTelegram.Client(Config);
     }
@@ -28,7 +28,7 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
         "api_id" => _options.ApiId.ToString(),
         "api_hash" => _options.ApiHash,
         "phone_number" => _options.PhoneNumber,
-        "session_pathname" => _sessionDestination,
+        "session_pathname" => _options.SessionPath,
         _ => null
     };
 
