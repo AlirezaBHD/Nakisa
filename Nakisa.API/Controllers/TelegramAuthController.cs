@@ -10,18 +10,20 @@ namespace Nakisa.API.Controllers;
 public class TelegramAuthController : ControllerBase
 {
     private static Client? _client;
-    private static string? _pendingCode;
-    private static string? _pendingPassword;
+    private static TaskCompletionSource<string>? _codeTcs;
+    private static TaskCompletionSource<string>? _passwordTcs;
     private readonly TelegramClientOptions _options;
 
     public TelegramAuthController(IOptions<TelegramClientOptions> options)
     {
         _options = options.Value;
     }
-
     [HttpPost("start")]
     public async Task<IActionResult> Start()
     {
+        _codeTcs = new TaskCompletionSource<string>();
+        _passwordTcs = new TaskCompletionSource<string>();
+
         _client = new Client(Config);
         var user = await _client.LoginUserIfNeeded();
         return Ok(user);
@@ -30,36 +32,56 @@ public class TelegramAuthController : ControllerBase
     [HttpPost("code")]
     public IActionResult SubmitCode([FromBody] string code)
     {
-        _pendingCode = code;
-        return Ok("Code submitted, continue login...");
+        _codeTcs?.TrySetResult(code);
+        return Ok("Code submitted");
     }
 
     [HttpPost("password")]
     public IActionResult SubmitPassword([FromBody] string password)
     {
-        _pendingPassword = password;
-        return Ok("Password submitted, continue login...");
+        _passwordTcs?.TrySetResult(password);
+        return Ok("Password submitted");
     }
 
     private string? Config(string what)
     {
         return what switch
         {
-            "api_id"             => _options.ApiId.ToString(),
-            "api_hash"           => _options.ApiHash,
-            "phone_number"       => _options.PhoneNumber,
-            "verification_code"  => WaitFor(ref _pendingCode),
-            "password"           => WaitFor(ref _pendingPassword),
+            "api_id" => _options.ApiId.ToString(),
+            "api_hash" => _options.ApiHash,
+            "phone_number" => _options.PhoneNumber,
+            // "session_pathname" => _options.SessionPath,
+            "verification_code" => _codeTcs!.Task.Result,
+            "password" => _passwordTcs!.Task.Result,
+
             _ => null
         };
     }
-
-    private static string WaitFor(ref string? field)
+    
+    
+    [HttpPost("session")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Session([FromForm] SessionDto session)
     {
-        while (field == null)
-            Thread.Sleep(500);
-        var value = field;
-        field = null;
-        return value!;
+        var sessionFile = session.SessionFile;
+        if (sessionFile == null || sessionFile.Length == 0)
+            return BadRequest("No file uploaded");
+
+        var destPath = "/tmp/WTelegram.session";
+
+        if (System.IO.File.Exists(destPath))
+            System.IO.File.Delete(destPath);
+
+        await using var stream = new FileStream(destPath, FileMode.Create, FileAccess.Write);
+        await sessionFile.CopyToAsync(stream);
+
+        _options.SessionPath = destPath;
+
+        return Ok("Session uploaded successfully");
     }
+}
+
+public class SessionDto
+{
+    public IFormFile SessionFile{get;set;}
 }

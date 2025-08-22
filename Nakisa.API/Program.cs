@@ -18,6 +18,11 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile).Assembly);
 
 services.AddInfrastructureServices(builder.Configuration);
 
+
+builder.Services.AddOpenApi();
+
+services.AddSwaggerGen();
+
 var app = builder.Build();
 
 
@@ -31,6 +36,10 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseStaticFiles();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
