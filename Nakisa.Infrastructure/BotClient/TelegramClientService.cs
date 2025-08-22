@@ -15,10 +15,10 @@ public class TelegramClientService : ITelegramClientService, IAsyncDisposable
     {
         _options = options.Value;
 
-        _sessionDestination = "/tmp/WTelegram.session";
-
-        if (File.Exists(_options.SessionPath) && !File.Exists(_sessionDestination))
-            File.Copy(_options.SessionPath, _sessionDestination);
+        // _sessionDestination = "/tmp/WTelegram.session";
+        //
+        // if (File.Exists(_options.SessionPath) && !File.Exists(_sessionDestination))
+        //     File.Copy(_options.SessionPath, _sessionDestination);
 
         _client = new WTelegram.Client(Config);
     }
