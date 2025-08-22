@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Nakisa.Contracts.Bot;
+using Nakisa.Infrastructure.BotClient;
 using WTelegram;
 
 namespace Nakisa.API.Controllers;
@@ -13,18 +14,18 @@ public class TelegramAuthController : ControllerBase
     private static TaskCompletionSource<string>? _codeTcs;
     private static TaskCompletionSource<string>? _passwordTcs;
     private readonly TelegramClientOptions _options;
+    private readonly TelegramConfigProvider _configProvider;
 
-    public TelegramAuthController(IOptions<TelegramClientOptions> options)
+    public TelegramAuthController(IOptions<TelegramClientOptions> options, TelegramConfigProvider configProvider)
     {
+        _configProvider = configProvider;
         _options = options.Value;
     }
     [HttpPost("start")]
     public async Task<IActionResult> Start()
     {
-        _codeTcs = new TaskCompletionSource<string>();
-        _passwordTcs = new TaskCompletionSource<string>();
-
-        _client = new Client(Config);
+        _configProvider.StartLogin();
+        _client = new Client(_configProvider.Config);
         var user = await _client.LoginUserIfNeeded();
         return Ok(user);
     }
@@ -32,31 +33,17 @@ public class TelegramAuthController : ControllerBase
     [HttpPost("code")]
     public IActionResult SubmitCode([FromBody] string code)
     {
-        _codeTcs?.TrySetResult(code);
+        _configProvider.ProvideCode(code);
         return Ok("Code submitted");
     }
 
     [HttpPost("password")]
     public IActionResult SubmitPassword([FromBody] string password)
     {
-        _passwordTcs?.TrySetResult(password);
+        _configProvider.ProvidePassword(password);
         return Ok("Password submitted");
     }
-
-    private string? Config(string what)
-    {
-        return what switch
-        {
-            "api_id" => _options.ApiId.ToString(),
-            "api_hash" => _options.ApiHash,
-            "phone_number" => _options.PhoneNumber,
-            // "session_pathname" => _options.SessionPath,
-            "verification_code" => _codeTcs!.Task.Result,
-            "password" => _passwordTcs!.Task.Result,
-
-            _ => null
-        };
-    }
+    
     
     
     [HttpPost("session")]

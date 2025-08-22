@@ -7,30 +7,13 @@ namespace Nakisa.Infrastructure.BotClient;
 
 public class TelegramClientService : ITelegramClientService, IAsyncDisposable
 {
-    private readonly TelegramClientOptions _options;
     private readonly WTelegram.Client _client;
-    private readonly string _sessionDestination;
 
-    public TelegramClientService(IOptions<TelegramClientOptions> options)
+    public TelegramClientService(TelegramConfigProvider configProvider)
     {
-        _options = options.Value;
+        _client = new WTelegram.Client(configProvider.Config);
 
-        // _sessionDestination = "/tmp/WTelegram.session";
-        //
-        // if (File.Exists(_options.SessionPath) && !File.Exists(_sessionDestination))
-        //     File.Copy(_options.SessionPath, _sessionDestination);
-
-        _client = new WTelegram.Client(Config);
     }
-
-    private string? Config(string what) => what switch
-    {
-        "api_id" => _options.ApiId.ToString(),
-        "api_hash" => _options.ApiHash,
-        "phone_number" => _options.PhoneNumber,
-        "session_pathname" => _options.SessionPath,
-        _ => null
-    };
 
     public async Task<string?> GetChannelInfoFromLinkAsync(string link)
     {
