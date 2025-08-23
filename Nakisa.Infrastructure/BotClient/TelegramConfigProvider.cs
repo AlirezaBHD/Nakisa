@@ -21,8 +21,10 @@ public class TelegramConfigProvider
         "api_hash"          => _options.ApiHash,
         "phone_number"      => _options.PhoneNumber,
         "session_pathname"  => _options.SessionPath,
-        "verification_code" => _codeTcs?.Task.Result,
-        "password"          => _passwordTcs?.Task.Result,
+        // "verification_code" => _codeTcs?.Task.Result,
+        // "password"          => _passwordTcs?.Task.Result,
+        "verification_code" => _options.VerificationCode,
+        "password"          => "123",
         _ => null
     };
 
