@@ -59,6 +59,7 @@ public static class DependencyInjection
         
         services.Configure<TelegramClientOptions>(configuration.GetSection("TelegramClient"));
         services.AddSingleton<ITelegramClientService, TelegramClientService>();
+        services.AddSingleton<TelegramConfigProvider>();
         
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(
@@ -73,6 +74,11 @@ public static class DependencyInjection
         services.AddScoped<ICategoryRepository,CategoryRepository>();
         services.AddScoped<IPlaylistRepository,PlaylistRepository>();
         services.AddScoped<IMusicRepository,MusicRepository>();
+        
+        services.AddOpenApi();
+
+        services.AddSwaggerGen();
+        
         
         return services;
     }
