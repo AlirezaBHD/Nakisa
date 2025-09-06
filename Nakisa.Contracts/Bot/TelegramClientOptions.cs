@@ -6,4 +6,5 @@ public class TelegramClientOptions
     public string? ApiHash { get; set; }
     public string? PhoneNumber { get; set; }
     public string? SessionPath { get; set; }
+    public string? VerificationCode { get; set; }
 }
