@@ -38,7 +38,7 @@ Users can join categorized playlists, share songs, promote their channels, and c
 ### 1️⃣ Clone the repository
 
 ```bash
-git clone https://github.com/username/nakisa.git
+git clone https://github.com/AlirezaBHD/Nakisa.git
 cd nakisa
 ```
 
