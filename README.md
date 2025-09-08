@@ -39,7 +39,7 @@ Users can join categorized playlists, share songs, promote their channels, and c
 
 ```bash
 git clone https://github.com/AlirezaBHD/Nakisa.git
-cd nakisa
+cd Nakisa
 ```
 
 ### 2️⃣ Configure environment variables
