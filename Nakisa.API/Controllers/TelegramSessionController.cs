@@ -35,14 +35,12 @@ public class TelegramSessionController : ControllerBase
 
         await using var stream = new FileStream(destPath!, FileMode.Create, FileAccess.Write);
         await sessionFile.CopyToAsync(stream);
-
-        _options.SessionPath = destPath;
-
+        
         return Ok("Session uploaded successfully");
     }
 }
 
 public class SessionDto
 {
-    public IFormFile? SessionFile{get;set;}
+    public IFormFile? SessionFile { get; set; }
 }
