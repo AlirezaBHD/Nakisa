@@ -14,7 +14,20 @@ var services = builder.Services;
 services.AddControllers();
 services.AddOpenApi();
 
-builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile).Assembly);
+services.AddAutoMapper(cfg => { }, typeof(UserProfile).Assembly);
+
+
+#region Temporary!
+
+var baseDir = Directory.GetCurrentDirectory();
+
+var rootDir = Path.GetFullPath(Path.Combine(baseDir, ".."));
+
+var destPath = Path.Combine(rootDir, "WTelegram.session");
+builder.Configuration["TelegramClient:SessionPath"] =destPath;
+
+#endregion
+
 
 services.AddInfrastructureServices(builder.Configuration);
 
