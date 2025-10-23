@@ -59,7 +59,6 @@ public static class DependencyInjection
         
         services.Configure<TelegramClientOptions>(configuration.GetSection("TelegramClient"));
         services.AddSingleton<ITelegramClientService, TelegramClientService>();
-        services.AddSingleton<TelegramConfigProvider>();
         
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(
