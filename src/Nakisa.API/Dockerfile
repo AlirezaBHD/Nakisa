@@ -11,11 +11,11 @@ COPY ["src/Nakisa.API/Nakisa.API.csproj", "Nakisa.API/"]
 RUN dotnet restore "src/Nakisa.API/Nakisa.API.csproj"
 COPY . .
 WORKDIR "/src/Nakisa.API"
-RUN dotnet build "src/Nakisa.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Nakisa.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "src/Nakisa.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Nakisa.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
