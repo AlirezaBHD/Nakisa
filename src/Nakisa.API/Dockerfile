@@ -7,10 +7,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Nakisa.API/Nakisa.API.csproj", "Nakisa.API/"]
+COPY ["src/Nakisa.API/Nakisa.API.csproj", "src/Nakisa.API/"]
 RUN dotnet restore "src/Nakisa.API/Nakisa.API.csproj"
 COPY . .
-WORKDIR "/src/Nakisa.API"
+WORKDIR "/src/src/Nakisa.API"
 RUN dotnet build "./Nakisa.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
