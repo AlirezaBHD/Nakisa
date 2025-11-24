@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Nakisa.Application\Nakisa.Application.csproj" />
+      <ProjectReference Include="..\..\src\Nakisa.Application\Nakisa.Application.csproj" />
     </ItemGroup>
 
 </Project>

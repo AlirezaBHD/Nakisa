@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.API", "Nakisa.API\Nakisa.API.csproj", "{3378047B-EB8B-4A4D-A1CD-BF39869D8A90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.API", "src\Nakisa.API\Nakisa.API.csproj", "{3378047B-EB8B-4A4D-A1CD-BF39869D8A90}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{55F7EA40-B609-4238-A4D2-6FD0CBD060E5}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Application", "Nakisa.Application\Nakisa.Application.csproj", "{01D8F331-30B7-4CC5-9F45-FCB7FC3E4109}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Application", "src\Nakisa.Application\Nakisa.Application.csproj", "{01D8F331-30B7-4CC5-9F45-FCB7FC3E4109}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Domain", "Nakisa.Domain\Nakisa.Domain.csproj", "{38635164-301E-4194-B029-BC31B42ECFF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Domain", "src\Nakisa.Domain\Nakisa.Domain.csproj", "{38635164-301E-4194-B029-BC31B42ECFF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Infrastructure", "Nakisa.Infrastructure\Nakisa.Infrastructure.csproj", "{FBF2312D-9C27-4ED6-9312-80B68707BBA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Infrastructure", "src\Nakisa.Infrastructure\Nakisa.Infrastructure.csproj", "{FBF2312D-9C27-4ED6-9312-80B68707BBA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Persistence", "Nakisa.Persistence\Nakisa.Persistence.csproj", "{A456F42D-AB65-4265-A4D3-16B60C416E13}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Persistence", "src\Nakisa.Persistence\Nakisa.Persistence.csproj", "{A456F42D-AB65-4265-A4D3-16B60C416E13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Contracts", "Nakisa.Contracts\Nakisa.Contracts.csproj", "{3074457E-2119-4BC2-A48E-937E8C067901}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Contracts", "src\Nakisa.Contracts\Nakisa.Contracts.csproj", "{3074457E-2119-4BC2-A48E-937E8C067901}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Tests", "Nakisa.Tests\Nakisa.Tests.csproj", "{39606ADF-D887-4DD8-BD11-DA9CAA745A45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.Tests", "tests\Nakisa.Tests\Nakisa.Tests.csproj", "{39606ADF-D887-4DD8-BD11-DA9CAA745A45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.SharedKernel", "Nakisa.SharedKernel\Nakisa.SharedKernel.csproj", "{070B4402-906A-40BC-AE44-9E0FC831AAA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nakisa.SharedKernel", "src\Nakisa.SharedKernel\Nakisa.SharedKernel.csproj", "{070B4402-906A-40BC-AE44-9E0FC831AAA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
