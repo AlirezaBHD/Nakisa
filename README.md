@@ -1,4 +1,4 @@
-<img width="1280" height="720" alt="Untitled Design (1)" src="https://github.com/user-attachments/assets/09002bad-f16f-42d4-924b-e34795da6db4" />
+<img width="1280" height="720" alt="cover" src="https://github.com/user-attachments/assets/254d66bd-de85-4228-86c4-0d14d138794a" />
 
 **Nakisa** is a Telegram bot that builds structured music communities around playlists.  
 Users can join categorized playlists, share songs, promote their channels, and connect with people who share the same music taste.  
